@@ -91,9 +91,10 @@ try {
         $kept += $l
         $room -= $need
     }
-    if ($kept.Count -lt $lines.Count) {
+    # 목록을 쓰는 템플릿일 때만 잘림을 알린다 ({nos} 만 쓰면 잘릴 일이 없다)
+    if ($frame.Contains('{list}') -and $kept.Count -lt $lines.Count) {
         Write-DeLog -Level 'WARN' -LogDir $logDir -Message (
-            '200자 제한으로 문장 {0}개만 본문에 담았습니다 (링크는 유지)' -f $kept.Count)
+            '200자 제한으로 문장 {0}/{1}개만 본문에 담았습니다 (링크는 유지)' -f $kept.Count, $lines.Count)
     }
     $text = $frame.Replace('{list}', ($kept -join "`n")).TrimEnd()
 

@@ -53,19 +53,31 @@ data\phrases.tsv (번호·영어·쇼츠링크)   data\translations.tsv (번호�
 기록(카드별 최근 결과·학습일)은 **폰의 localStorage 에만** 저장한다. 서버로 나가지 않는다
 (`_shared/CONVENTIONS.md` §5 의 PWA 원칙과 같은 기준).
 
-## 4. 호스팅 — 결정 필요
+## 4. 호스팅 — GitHub Pages (2026-08-29 확정)
 
-페이지는 어디든 올릴 수 있는 단일 파일이다. 후보:
+**https://johannespark-1789.github.io/daily-english/** — 공개 저장소 `daily-english` 의
+`main` 브랜치 `/docs` 를 사이트 루트로 쓴다. `build-web.ps1` 이 `docs\index.html` 을 함께 굽는다.
 
-| 방법 | 링크 열 때 | 비용 | 걸리는 것 |
-|---|---|---|---|
-| **Artifact** (claude.ai) | claude.ai 로그인 상태여야 열림 | 무료 | 폰에서 로그인 안 되어 있으면 불편 |
-| **GitHub Pages** | 누구나 바로 열림 | 무료 | **공개 저장소**여야 함 (문장·번역이 공개된다) |
-| Cloudflare Pages / Netlify | 누구나 바로 열림 | 무료 | 계정 하나 더 만들어야 함 |
+처음에는 Artifact(claude.ai)로 올렸다가 옮겼다. **폰에서 열면 로그인을 요구해서** 쓸 수 없었다.
+Pages 는 로그인이 필요 없고, 주소도 80자 → 62자로 짧아졌다 (카톡 200자 제한에서 URL 길이가 중요하다).
 
-기본값은 **Artifact** 로 잡아 두었다 — 지금 바로 쓸 수 있고 비공개다.
-로그인 없이 열리는 링크를 원하면 GitHub Pages 로 옮기면 되고, `config.json` 의 `web.baseUrl`
-한 줄만 바꾸면 발송 스크립트는 그대로 돈다.
+| 방법 | 링크 열 때 | 걸리는 것 |
+|---|---|---|
+| **GitHub Pages** ← 사용 중 | 누구나 바로 열림 | 공개 저장소여야 함 (문장·번역이 공개된다) |
+| Artifact (claude.ai) | claude.ai 로그인 필요 | 폰에서 불편 — 이 이유로 탈락 |
+| Cloudflare Pages / Netlify | 누구나 바로 열림 | 계정을 하나 더 만들어야 함 |
+
+옮길 일이 생기면 `config.json` 의 `web.baseUrl` 한 줄만 바꾸면 된다.
+
+### 카톡 200자 제한
+
+텍스트 템플릿은 **200자**가 상한이고, 넘으면 뒤가 잘린다. 링크가 뒤에 있으면 URL 한가운데가
+잘려 죽는다(실제로 겪었다 — `clau…`). 그래서 발송 스크립트는 **링크를 먼저 확보하고 목록을 줄인다.**
+주소가 62자라 문장 5개(약 150자)를 다 넣을 수는 없어서, 본문에는 번호(`{nos}`)만 넣고
+문장 전문은 카드에서 본다. 템플릿에서 쓸 수 있는 자리표시자는 `{count} {range} {nos} {list} {url}`.
+
+버튼 링크(`button_title`)는 **앱에 등록된 도메인만** 동작한다. 본문 텍스트 URL 은 그 제약이 없어서
+본문 링크를 주 경로로 쓴다.
 
 ## 5. 주간 발송
 
