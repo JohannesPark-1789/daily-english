@@ -16,7 +16,8 @@
 
   "web": {
     "baseUrl": "https://johannespark-1789.github.io/daily-english/",
-    "startDate": "2026-08-24"
+    "startDate": "2026-08-24",
+    "includeSkippedInReview": true
   },
 
   "weekly": {

@@ -215,10 +215,18 @@ DATA.cards.forEach(function (c) { byNo[c.no] = c; });
 var dir = 'ko2en', scope = 'week', queue = [], idx = 0, flipped = false;
 var tally = { 0: 0, 1: 0, 2: 0 }, again = [];
 
-function pickAll() {
-  // 누적: 최근에 틀린 것 먼저, 잘 아는 것은 가끔만. 최대 20장.
+// 누적 풀 = 이 도구로 받은 번호 + 이전에 이미 학습한 번호(priorNos).
+// priorNos 는 발송에서는 제외되지만(skipNos) 복습 대상에는 들어간다.
+function allPool() {
   var pool = state.nos.slice();
   if (!pool.length) pool = scheduleUpTo(kstToday());
+  (DATA.priorNos || []).forEach(function (n) { if (pool.indexOf(n) < 0) pool.push(n); });
+  return pool.filter(function (n) { return byNo[n]; }).sort(function (a, b) { return a - b; });
+}
+
+function pickAll() {
+  // 누적: 최근에 틀린 것 먼저, 잘 아는 것은 가끔만. 최대 20장.
+  var pool = allPool();
   var scored = pool.map(function (n) {
     var s = state.seen[n];
     var weight = s ? (s.g === 0 ? 3 : s.g === 1 ? 2 : 0.6) : 2.5;
@@ -247,7 +255,7 @@ function render() {
 
   note.textContent = scope === 'week'
     ? '이번 주 ' + queue.length + '문장'
-    : '누적 ' + state.nos.length + '문장 중 ' + queue.length + '장';
+    : '누적 ' + allPool().length + '문장 중 ' + queue.length + '장';
 
   if (!queue.length) {
     count.textContent = '';

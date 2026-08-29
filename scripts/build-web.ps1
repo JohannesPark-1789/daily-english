@@ -53,9 +53,15 @@ foreach ($p in $phrases) {
     }
 }
 
+# skipNos 는 "발송에서 제외" 이지 "학습하지 않음" 이 아니다.
+# 이미 다른 경로로 배운 문장이라면 복습 누적에는 포함시킨다 (web.includeSkippedInReview).
+$prior = @()
+if ($cfg.web.includeSkippedInReview) { $prior = @($cfg.skipNos) }
+
 $payload = [pscustomobject]@{
     startDate = $cfg.web.startDate
     skipNos   = @($cfg.skipNos)
+    priorNos  = $prior
     cards     = $cards
 }
 $json = $payload | ConvertTo-Json -Depth 5 -Compress
