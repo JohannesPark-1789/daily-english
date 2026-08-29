@@ -277,7 +277,11 @@ function Send-DeKakaoMemo {
         [string]$Url,
         [string]$ButtonTitle = '쇼츠 보기'
     )
-    if ($Text.Length -gt 200) { $Text = $Text.Substring(0, 197) + '...' }   # 텍스트 템플릿 상한 200자
+    # 텍스트 템플릿 상한 200자. 잘리면 URL 한가운데가 잘려 링크가 죽으므로 경고를 남긴다.
+    if ($Text.Length -gt 200) {
+        Write-Warning ('메시지가 {0}자라 200자로 잘립니다 — 링크가 뒤쪽에 있으면 끊어집니다.' -f $Text.Length)
+        $Text = $Text.Substring(0, 197) + '...'
+    }
 
     $template = @{ object_type = 'text'; text = $Text }
     if ($Url) {

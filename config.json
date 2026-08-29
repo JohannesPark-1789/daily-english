@@ -24,11 +24,11 @@
     "sendTime": "07:00",
     "buttonTitle": "카드로 복습하기",
     "messageTemplate": [
-      "📚 이번 주 복습 ({range}) · {count}문장",
+      "📚 이번 주 복습 · {count}문장 ({range})",
+      "{nos}",
       "",
-      "{list}",
-      "",
-      "카드를 넘기며 확인해 보세요."
+      "카드로 넘기며 확인하기 ↓",
+      "{url}"
     ]
   }
 }

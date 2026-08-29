@@ -90,8 +90,14 @@ $html
 $artifactPath = Join-Path $dir 'artifact.html'
 [System.IO.File]::WriteAllText($artifactPath, $html, $utf8)
 
+# 3) GitHub Pages 용 — docs\ 를 사이트 루트로 쓰면 주소가 짧아진다
+#    (https://<계정>.github.io/daily-english/). 카톡 200자 제한에서 URL 길이가 중요하다.
+$pagesPath = Join-Path $root 'docs\index.html'
+[System.IO.File]::WriteAllText($pagesPath, $standalone, $utf8)
+
 $size = [math]::Round((Get-Item -LiteralPath $OutFile).Length / 1KB, 1)
 Write-DeLog -Level 'DONE' -LogDir $logDir -Message ('빌드 완료 — 카드 {0}장 (번역 없음 {1}장) / {2} KB' -f `
         $cards.Count, $missing.Count, $size)
-Write-DeLog -LogDir $logDir -Message ('  단독 호스팅용: {0}' -f $OutFile)
-Write-DeLog -LogDir $logDir -Message ('  Artifact 용  : {0}' -f $artifactPath)
+Write-DeLog -LogDir $logDir -Message ('  단독 호스팅용 : {0}' -f $OutFile)
+Write-DeLog -LogDir $logDir -Message ('  Artifact 용   : {0}' -f $artifactPath)
+Write-DeLog -LogDir $logDir -Message ('  GitHub Pages : {0}' -f $pagesPath)

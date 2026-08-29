@@ -155,10 +155,11 @@
 // ── 이번 주 카드 번호 정하기 ────────────────────────────────────────────────
 // 1) URL 파라미터 ?w=11,12,13  2) 없으면 시작일·평일·제외번호로 역산
 function paramNos() {
-  var q = (location.search + location.hash).match(/[?&#]w=([0-9,\-]+)/);
+  // 구분자는 쉼표와 밑줄 둘 다 받는다 — 카톡 자동 링크가 쉼표에서 잘리는 경우가 있어서.
+  var q = (location.search + location.hash).match(/[?&#]w=([0-9,_\-]+)/);
   if (!q) return null;
   var out = [];
-  q[1].split(',').forEach(function (part) {
+  q[1].split(/[,_]/).forEach(function (part) {
     var m = part.match(/^(\d+)-(\d+)$/);
     if (m) { for (var i = +m[1]; i <= +m[2]; i++) out.push(i); }
     else if (part) out.push(+part);

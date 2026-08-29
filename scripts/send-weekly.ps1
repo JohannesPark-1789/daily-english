@@ -66,13 +66,36 @@ try {
     if ($url) {
         $sep = '?'
         if ($url.Contains('?')) { $sep = '&' }
-        $url = '{0}{1}w={2}' -f $url, $sep, ($weekNos -join ',')
+        # 쉼표는 카톡 자동 링크에서 잘릴 수 있어 밑줄로 잇는다 (페이지가 둘 다 받는다)
+        $url = '{0}{1}w={2}' -f $url, $sep, ($weekNos -join '_')
     }
 
-    $text = ($cfg.weekly.messageTemplate -join "`n")
-    $text = $text.Replace('{count}', [string]$weekNos.Count)
-    $text = $text.Replace('{list}', ($lines -join "`n"))
-    $text = $text.Replace('{range}', ('{0:MM.dd}~{1:MM.dd}' -f $monday, $today))
+    # 본문에 URL 을 넣어야 카톡이 자동 링크로 만들어 준다
+    # (버튼 링크는 앱에 등록된 도메인만 동작하므로 본문 링크를 주 경로로 쓴다).
+    # 텍스트 템플릿은 200자 제한이라, 넘치면 링크가 아니라 문장 목록이 잘리게 한다.
+    $frame = ($cfg.weekly.messageTemplate -join "`n")
+    $frame = $frame.Replace('{count}', [string]$weekNos.Count)
+    $frame = $frame.Replace('{range}', ('{0:MM.dd}~{1:MM.dd}' -f $monday, $today))
+    $frame = $frame.Replace('{url}', $url)
+    # {nos} 는 번호만 압축한 것 — 길이가 짧아 항상 살아남는다
+    $frame = $frame.Replace('{nos}', (($weekNos | ForEach-Object { '{0:d3}' -f $_ }) -join ' '))
+
+    $limit = 200
+    $base = $frame.Replace('{list}', '')
+    $room = $limit - $base.Length
+    $kept = @()
+    foreach ($l in $lines) {
+        $need = $l.Length + 1
+        if ($kept.Count -eq 0) { $need = $l.Length }
+        if ($room - $need -lt 0) { break }
+        $kept += $l
+        $room -= $need
+    }
+    if ($kept.Count -lt $lines.Count) {
+        Write-DeLog -Level 'WARN' -LogDir $logDir -Message (
+            '200자 제한으로 문장 {0}개만 본문에 담았습니다 (링크는 유지)' -f $kept.Count)
+    }
+    $text = $frame.Replace('{list}', ($kept -join "`n")).TrimEnd()
 
     if ($DryRun) {
         Write-Host ''
