@@ -12,3 +12,7 @@ state/*
 # 잡파일
 Thumbs.db
 desktop.ini
+
+# 번역 검수 작업 파일 (왕복용, 추적하지 않음)
+data/review*.csv
+data/backup/

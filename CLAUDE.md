@@ -41,6 +41,24 @@ data\phrases.tsv (235문장)      config.json (템플릿·요일·시각)
 - 문장·번역을 고치면 `build-web.ps1` 을 다시 돌리고 호스팅에 올린다
 - 설계 배경과 호스팅 선택지는 [docs/REVIEW_CARDS.md](docs/REVIEW_CARDS.md)
 
+### 번역 검수
+
+카드 뒷면(한글)은 기계적으로 옮긴 초안이다. Excel 로 왕복하며 고친다.
+
+```
+review-export.cmd   →  data\review.csv 를 만들고 Excel 로 연다
+                       번호 / 영어 / 한글 / 확신도 / 검수메모 / 쇼츠링크가 한 줄에 있다
+                       "한글" 열만 고치고 저장 (CSV 형식 유지)
+review-import.cmd   →  바뀐 줄만 반영 (전/후를 보여준다) + 백업 + 카드 다시 빌드
+git push            →  사이트 반영
+```
+
+- **`확신도 = 확인필요` 인 51개부터** 보면 된다. 문맥·말투에 따라 뜻이 갈려 옮기기 어려웠던 것들이고,
+  왜 어려웠는지는 `검수메모` 열에 있다. `review-export.cmd -OnlyCheck` 로 그것만 뽑을 수 있다
+- 각 줄의 **쇼츠 링크를 클릭하면** 그 표현이 쓰인 장면을 바로 확인할 수 있다
+- 고친 줄은 `검수완료` 로 표시된다. 빈 칸으로 둔 줄은 무시한다 (실수로 지운 경우 보호)
+- 반영 전 `data\backup\translations-<시각>.tsv` 로 백업된다. `-WhatIfOnly` 로 미리 볼 수도 있다
+
 ## 2. 실행
 
 ```
