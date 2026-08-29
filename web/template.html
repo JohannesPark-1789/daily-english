@@ -1,0 +1,367 @@
+<title>듣보잡 영어 복습 카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+  /* 자막(캡션)을 모티프로 삼았다 — 출처가 쇼츠 영상이고, 카드가 하는 일도
+     화면 아래 자막처럼 "한 줄을 띄우고 뜻을 붙이는" 것이라서. */
+  :root {
+    --bg: #e9ecec; --surface: #ffffff; --plate: #16181c;
+    --ink: #14161a; --on-plate: #f4f6f6; --muted: #5f6872; --line: #d6dbda;
+    --accent: #f0c000; --accent-ink: #7a6000;
+    --no: #b8384f; --mid: #4f7396; --ok: #2c7f57;
+    --shadow: 0 1px 2px rgba(16,20,24,.05), 0 10px 30px rgba(16,20,24,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1013; --surface: #181b20; --plate: #05060700;
+      --ink: #eef1f2; --on-plate: #f4f6f6; --muted: #99a2ac; --line: #262b32;
+      --accent: #ffd54a; --accent-ink: #ffd54a;
+      --no: #e0697e; --mid: #85a9cd; --ok: #62b98c;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1013; --surface: #181b20; --plate: #05060700;
+    --ink: #eef1f2; --on-plate: #f4f6f6; --muted: #99a2ac; --line: #262b32;
+    --accent: #ffd54a; --accent-ink: #ffd54a;
+    --no: #e0697e; --mid: #85a9cd; --ok: #62b98c;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    line-height: 1.5;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  .wrap { max-width: 540px; margin: 0 auto; padding: 18px 16px 36px; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, "Consolas", monospace; font-variant-numeric: tabular-nums; }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  h1 { font-size: 14px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  h1 em { font-style: normal; color: var(--muted); font-weight: 400; }
+  .counter { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+  .tab {
+    flex: 1; padding: 10px 8px; border: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); border-radius: 4px; font-family: inherit; font-size: 13px;
+    font-weight: 500; cursor: pointer;
+  }
+  .tab[aria-selected="true"] { color: var(--ink); border-color: var(--ink); font-weight: 600; }
+
+  .modes { display: flex; gap: 0; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .mode {
+    flex: 1; padding: 8px 4px; border: 0; border-right: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); font-family: inherit; font-size: 12px; cursor: pointer;
+  }
+  .mode:last-child { border-right: 0; }
+  .mode[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
+
+  /* 스크럽 바 — 영상 진행바처럼 */
+  .scrub { height: 2px; background: var(--line); margin-bottom: 18px; position: relative; }
+  .scrub i { position: absolute; inset: 0 auto 0 0; background: var(--accent); width: 0; transition: width .2s ease; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: var(--shadow); overflow: hidden; cursor: pointer; user-select: none;
+  }
+  .card .stamp {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 14px; border-bottom: 1px solid var(--line);
+    font-size: 11px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase;
+  }
+  .card .stamp b { color: var(--accent-ink); font-weight: 500; }
+  .face {
+    padding: 46px 22px; min-height: 190px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .face .line { font-size: 26px; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; word-break: keep-all; }
+  .face .line.en { font-size: 24px; letter-spacing: -.01em; }
+  .prompt { margin-top: 20px; font-size: 12px; color: var(--muted); }
+
+  /* 뒷면 — 자막 판 */
+  .plate { background: var(--plate); padding: 24px 20px; text-align: center; }
+  .plate .lbl { font-size: 10px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
+  .plate .txt { font-size: 22px; font-weight: 600; color: var(--on-plate); text-wrap: balance; word-break: keep-all; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .plate { border-top: 1px solid var(--line); }
+    :root:not([data-theme="light"]) .plate .txt { color: var(--accent); }
+  }
+  :root[data-theme="dark"] .plate { border-top: 1px solid var(--line); }
+  :root[data-theme="dark"] .plate .txt { color: var(--accent); }
+  .plate a { display: inline-block; margin-top: 14px; font-size: 12px; color: var(--muted); text-decoration: none; border-bottom: 1px solid currentColor; }
+
+  .grade { display: none; gap: 8px; margin-top: 12px; }
+  .grade.on { display: flex; }
+  .grade button {
+    flex: 1; padding: 14px 4px; border-radius: 4px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink); font-family: inherit; font-size: 14px;
+    font-weight: 600; cursor: pointer;
+  }
+  .grade .g0 { border-color: var(--no); color: var(--no); }
+  .grade .g1 { border-color: var(--mid); color: var(--mid); }
+  .grade .g2 { border-color: var(--ok); color: var(--ok); }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 12px; color: var(--muted); }
+  .foot a { color: var(--muted); }
+
+  .done { text-align: center; padding: 34px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+  .done h2 { font-size: 18px; margin: 0 0 6px; font-weight: 600; }
+  .done p { color: var(--muted); font-size: 13px; margin: 0 0 20px; }
+  .tally { display: flex; gap: 18px; justify-content: center; margin-bottom: 22px; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+  .tally b { display: block; font-size: 24px; font-weight: 600; }
+  .btn {
+    padding: 12px 18px; border-radius: 4px; border: 1px solid var(--ink); background: var(--ink);
+    color: var(--bg); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; margin: 0 4px;
+  }
+  .btn.ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+  .empty { text-align: center; color: var(--muted); padding: 48px 12px; font-size: 13px; line-height: 1.7; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>듣보잡 영어 <em>복습 카드</em></h1>
+    <div class="counter mono" id="count"></div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab" id="tabWeek" aria-selected="true">이번 주</button>
+    <button class="tab" id="tabAll" aria-selected="false">누적 연습</button>
+  </div>
+
+  <div class="modes">
+    <button class="mode" data-dir="ko2en" aria-pressed="true">한글 → 영어</button>
+    <button class="mode" data-dir="en2ko" aria-pressed="false">영어 → 한글</button>
+    <button class="mode" data-dir="mix" aria-pressed="false">섞기</button>
+  </div>
+
+  <div class="scrub"><i id="prog"></i></div>
+  <div id="stage"></div>
+
+  <div class="foot">
+    <span id="footNote"></span>
+    <a href="#" id="reset">기록 지우기</a>
+  </div>
+</div>
+
+<script>
+/*__DATA__*/
+
+// ── 이번 주 카드 번호 정하기 ────────────────────────────────────────────────
+// 1) URL 파라미터 ?w=11,12,13  2) 없으면 시작일·평일·제외번호로 역산
+function paramNos() {
+  var q = (location.search + location.hash).match(/[?&#]w=([0-9,\-]+)/);
+  if (!q) return null;
+  var out = [];
+  q[1].split(',').forEach(function (part) {
+    var m = part.match(/^(\d+)-(\d+)$/);
+    if (m) { for (var i = +m[1]; i <= +m[2]; i++) out.push(i); }
+    else if (part) out.push(+part);
+  });
+  return out.length ? out : null;
+}
+
+function kstToday() {
+  var now = new Date();
+  return new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (9 * 3600000));
+}
+
+// 발송 규칙대로 순서를 만든다: 시작 번호부터, 제외 번호는 건너뛰며 평일마다 하나씩
+function scheduleUpTo(date) {
+  var skip = {};
+  DATA.skipNos.forEach(function (n) { skip[n] = 1; });
+  var order = DATA.cards.map(function (c) { return c.no; }).filter(function (n) { return !skip[n]; });
+  var d = new Date(DATA.startDate + 'T00:00:00Z'), sent = [], i = 0;
+  while (d <= date && i < order.length) {
+    var day = d.getUTCDay();
+    if (day >= 1 && day <= 5) { sent.push(order[i]); i++; }
+    d = new Date(d.getTime() + 86400000);
+  }
+  return sent;
+}
+
+function weekNos() {
+  var p = paramNos();
+  if (p) return p;
+  return scheduleUpTo(kstToday()).slice(-5);
+}
+
+// ── 기록 (이 기기에만 저장) ─────────────────────────────────────────────────
+var KEY = 'dbj-cards-v1';
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || { seen: {}, nos: [] }; }
+  catch (e) { return { seen: {}, nos: [] }; }
+}
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { } }
+
+var state = loadState();
+var byNo = {};
+DATA.cards.forEach(function (c) { byNo[c.no] = c; });
+
+// 이번 주 번호를 누적 목록에 합쳐 둔다 (누적 연습용)
+(function () {
+  var w = weekNos(), changed = false;
+  w.forEach(function (n) { if (state.nos.indexOf(n) < 0) { state.nos.push(n); changed = true; } });
+  if (changed) { state.nos.sort(function (a, b) { return a - b; }); saveState(state); }
+})();
+
+// ── 세션 ────────────────────────────────────────────────────────────────────
+var dir = 'ko2en', scope = 'week', queue = [], idx = 0, flipped = false;
+var tally = { 0: 0, 1: 0, 2: 0 }, again = [];
+
+function pickAll() {
+  // 누적: 최근에 틀린 것 먼저, 잘 아는 것은 가끔만. 최대 20장.
+  var pool = state.nos.slice();
+  if (!pool.length) pool = scheduleUpTo(kstToday());
+  var scored = pool.map(function (n) {
+    var s = state.seen[n];
+    var weight = s ? (s.g === 0 ? 3 : s.g === 1 ? 2 : 0.6) : 2.5;
+    return { no: n, w: weight * (0.6 + Math.random()) };
+  });
+  scored.sort(function (a, b) { return b.w - a.w; });
+  return scored.slice(0, 20).map(function (x) { return x.no; });
+}
+
+function startSession(nos) {
+  queue = nos.filter(function (n) { return byNo[n]; });
+  idx = 0; flipped = false; tally = { 0: 0, 1: 0, 2: 0 }; again = [];
+  render();
+}
+
+function currentDir() {
+  if (dir !== 'mix') return dir;
+  return (idx % 2 === 0) ? 'ko2en' : 'en2ko';
+}
+
+function render() {
+  var stage = document.getElementById('stage');
+  var prog = document.getElementById('prog');
+  var count = document.getElementById('count');
+  var note = document.getElementById('footNote');
+
+  note.textContent = scope === 'week'
+    ? '이번 주 ' + queue.length + '문장'
+    : '누적 ' + state.nos.length + '문장 중 ' + queue.length + '장';
+
+  if (!queue.length) {
+    count.textContent = '';
+    prog.style.width = '0';
+    stage.innerHTML = '<div class="empty">아직 복습할 카드가 없습니다.<br>평일 아침 문장을 받은 뒤 토요일에 열어 보세요.</div>';
+    return;
+  }
+
+  if (idx >= queue.length) {
+    prog.style.width = '100%';
+    count.textContent = queue.length + ' / ' + queue.length;
+    var retry = again.length ? '<button class="btn" id="retry">헷갈린 ' + again.length + '장 다시</button>' : '';
+    stage.innerHTML =
+      '<div class="done"><h2>한 바퀴 끝</h2><p>' +
+      (again.length ? '모름·애매로 표시한 것만 다시 볼까요?' : '전부 알고 계시네요.') + '</p>' +
+      '<div class="tally">' +
+      '<div style="color:var(--no)"><b class="mono">' + tally[0] + '</b>모름</div>' +
+      '<div style="color:var(--mid)"><b class="mono">' + tally[1] + '</b>애매</div>' +
+      '<div style="color:var(--ok)"><b class="mono">' + tally[2] + '</b>알아</div></div>' +
+      retry + '<button class="btn ghost" id="restart">처음부터</button></div>';
+    var r = document.getElementById('retry');
+    if (r) r.onclick = function () { startSession(again.slice()); };
+    document.getElementById('restart').onclick = function () { startSession(queue.slice()); };
+    return;
+  }
+
+  var card = byNo[queue[idx]];
+  var d = currentDir();
+  var frontTxt = d === 'ko2en' ? card.ko : card.en;
+  var backTxt = d === 'ko2en' ? card.en : card.ko;
+  var frontLabel = d === 'ko2en' ? '한글' : 'English';
+  var backLabel = d === 'ko2en' ? 'English' : '한글';
+
+  count.textContent = (idx + 1) + ' / ' + queue.length;
+  prog.style.width = Math.round((idx / queue.length) * 100) + '%';
+
+  stage.innerHTML =
+    '<div class="card" id="card">' +
+    '<div class="stamp mono"><span>' + frontLabel + '</span><b>#' + String(card.no).padStart(3, '0') + '</b></div>' +
+    '<div class="face"><div class="line' + (d === 'en2ko' ? ' en' : '') + '">' + esc(frontTxt) + '</div>' +
+    (flipped ? '' : '<div class="prompt">먼저 소리 내어 답해 보세요 · 탭하면 정답</div>') + '</div>' +
+    (flipped
+      ? '<div class="plate"><div class="lbl mono">' + backLabel + '</div><div class="txt">' + esc(backTxt) + '</div>' +
+        (card.url ? '<a href="' + card.url + '" target="_blank" rel="noopener">쇼츠로 확인하기</a>' : '') + '</div>'
+      : '') +
+    '</div>' +
+    '<div class="grade' + (flipped ? ' on' : '') + '">' +
+    '<button class="g0" data-g="0">모름</button>' +
+    '<button class="g1" data-g="1">애매</button>' +
+    '<button class="g2" data-g="2">알아</button></div>';
+
+  document.getElementById('card').onclick = function () {
+    if (!flipped) { flipped = true; render(); }
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('.grade button'), function (b) {
+    b.onclick = function () { grade(+b.dataset.g); };
+  });
+}
+
+function grade(g) {
+  var no = queue[idx];
+  tally[g]++;
+  if (g < 2 && again.indexOf(no) < 0) again.push(no);
+  state.seen[no] = { g: g, at: kstToday().toISOString().slice(0, 10) };
+  saveState(state);
+  idx++; flipped = false;
+  render();
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
+  });
+}
+
+// ── 조작 ────────────────────────────────────────────────────────────────────
+document.getElementById('tabWeek').onclick = function () {
+  scope = 'week';
+  this.setAttribute('aria-selected', 'true');
+  document.getElementById('tabAll').setAttribute('aria-selected', 'false');
+  startSession(weekNos());
+};
+document.getElementById('tabAll').onclick = function () {
+  scope = 'all';
+  this.setAttribute('aria-selected', 'true');
+  document.getElementById('tabWeek').setAttribute('aria-selected', 'false');
+  startSession(pickAll());
+};
+Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (b) {
+  b.onclick = function () {
+    dir = b.dataset.dir;
+    Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (x) {
+      x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+    });
+    try { localStorage.setItem('dbj-dir', dir); } catch (e) { }
+    startSession(scope === 'week' ? weekNos() : pickAll());
+  };
+});
+document.getElementById('reset').onclick = function (e) {
+  e.preventDefault();
+  if (!confirm('이 기기에 저장된 복습 기록을 모두 지웁니다.')) return;
+  state = { seen: {}, nos: [] };
+  saveState(state);
+  startSession(weekNos());
+};
+
+try {
+  var savedDir = localStorage.getItem('dbj-dir');
+  if (savedDir) {
+    dir = savedDir;
+    Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (x) {
+      x.setAttribute('aria-pressed', x.dataset.dir === dir ? 'true' : 'false');
+    });
+  }
+} catch (e) { }
+
+startSession(weekNos());
+</script>

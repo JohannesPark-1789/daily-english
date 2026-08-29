@@ -9,6 +9,17 @@
   - `progress.json`: `nextNo: 11`, `sentNos: [1,4,7,9,10]`
   - 다음 실행 **08-31(월) 07:00 → 011**
 - 이 기록 파일과 KST 확인 습관을 추가 (일주일 전 맥락으로 "내일이 월요일"이라고 오답한 일이 있었다)
+- **git init + 첫 커밋** (`main`). `.env`·`tokens.json`·`progress.json` 제외 확인 후 커밋
+- **주말 복습 카드 추가** (설계: `docs/REVIEW_CARDS.md`)
+  - 한글 번역 235개 초안 작성 → `data/translations.tsv` (검수 필요)
+  - `web/template.html` + `build-web.ps1` → 단독 호스팅용/Artifact용 두 벌 빌드
+  - 카드 앱: 한글↔영어 방향 선택·섞기, 3단계 자기평가, 못 맞힌 것만 재시도,
+    누적 연습(오답 가중 20장), 기록은 localStorage
+  - 브라우저로 뒤집기·채점·누적·완료화면까지 동작 확인
+  - Artifact 로 발행해 `config.json` 의 `web.baseUrl` 에 연결
+  - 작업 스케줄러 `daily-english-weekly` 등록 (토 07:00, 다음 실행 09-05)
+  - 이번 주 분(1·4·7·9·10) 실제 발송 성공
+- 빌드 산출물의 한글 깨짐: 단독 호스팅용 파일에 `<meta charset>` 이 없으면 깨진다 (해결)
 
 ## 2026-08-23 (일)
 

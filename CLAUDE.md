@@ -25,6 +25,22 @@ data\phrases.tsv (235문장)      config.json (템플릿·요일·시각)
   날짜를 건너뛰어도 번호는 밀리지 않는다 (날짜 기준이 아니라 진행 번호 기준).
 - 목록을 다 쓰면 멈춘다. `config.json` 의 `onFinish: "loop"` 로 바꾸면 처음부터 다시 돈다.
 
+### 주말 복습 카드 (토 07:00)
+
+평일에 받은 문장을 토요일 아침에 카드로 다시 본다. 카톡은 링크만 나르고, 복습은 웹페이지가 한다.
+
+```
+토 07:00  send-weekly.ps1 → 그 주 로그에서 발송분을 뽑아 문장 목록 + 카드 링크 발송
+                              ↓
+   web\index.html  한글↔영어 방향 선택 · 3단계 자기평가 · 못 맞힌 것만 다시
+                   "누적 연습" 탭은 지금까지 받은 전체에서 오답 위주로 20장
+```
+
+- 카드 범위: 링크의 `?w=1,4,7` 파라미터 → 없으면 시작일·평일·`skipNos` 로 역산 → 누적은 localStorage
+- 복습 기록은 **폰 안에만** 남는다 (서버 없음). 기기가 바뀌면 기록도 따라오지 않는다
+- 문장·번역을 고치면 `build-web.ps1` 을 다시 돌리고 호스팅에 올린다
+- 설계 배경과 호스팅 선택지는 [docs/REVIEW_CARDS.md](docs/REVIEW_CARDS.md)
+
 ## 2. 실행
 
 ```
@@ -32,15 +48,23 @@ C:\Dev\daily-english\
 ├── setup.cmd            ← 최초 1회 카카오 인증
 ├── preview.cmd          ← 발송 안 하고 내용만 확인 (-No 42 로 특정 번호)
 ├── send-now.cmd         ← 지금 즉시 발송 (요일·중복 검사 무시)
-├── register-task.cmd    ← 월~금 07:00 작업 등록 / -Remove 해제 / -Status 확인
-├── config.json          ← 메시지 템플릿·발송 요일·시각·버튼 문구
-├── .env                 ← 카카오 REST API 키 (커밋 금지)
-├── data\phrases.tsv     ← 번호 / 표현 / 쇼츠 링크 (탭 구분)
+├── register-task.cmd    ← 월~금 07:00 등록 / -Weekly 토요일 / -Remove / -Status
+├── config.json          ← 메시지 템플릿·발송 요일·시각·버튼 문구·카드 주소
+├── .env                 ← 카카오 REST API 키·시크릿 (커밋 금지)
+├── data\
+│   ├── phrases.tsv      ← 번호 / 표현 / 쇼츠 링크 (탭 구분)
+│   └── translations.tsv ← 번호 / 한글 뜻 — 카드 뒷면
+├── web\
+│   ├── template.html    ← 카드 앱 원본 (데이터 자리표시자 포함)
+│   ├── index.html       ← 빌드 결과 · 단독 호스팅용 (완전한 문서)
+│   └── artifact.html    ← 빌드 결과 · Artifact 발행용 (본문만)
 ├── state\               ← tokens.json · progress.json (커밋 금지)
 ├── logs\                ← daily-english-YYYY-MM.log
 └── scripts\
     ├── setup-auth.ps1   ← 인증 코드 → 토큰
-    ├── send-today.ps1   ← 발송 본체 (-DryRun / -No / -Force)
+    ├── send-today.ps1   ← 평일 발송 (-DryRun / -No / -Force)
+    ├── send-weekly.ps1  ← 주말 복습 발송 (-DryRun / -Date / -Force)
+    ├── build-web.ps1    ← TSV → 카드 앱 빌드
     ├── register-task.ps1
     └── lib\kakao.psm1   ← 설정·토큰·발송·목록·진행상태
 ```

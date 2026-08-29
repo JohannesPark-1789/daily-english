@@ -12,5 +12,23 @@
     "{phrase}",
     "",
     "{url}"
-  ]
+  ],
+
+  "web": {
+    "baseUrl": "https://claude.ai/code/artifact/74e71067-43f4-48a6-97e2-5fc2c30474a7",
+    "startDate": "2026-08-24"
+  },
+
+  "weekly": {
+    "day": "Saturday",
+    "sendTime": "07:00",
+    "buttonTitle": "카드로 복습하기",
+    "messageTemplate": [
+      "📚 이번 주 복습 ({range}) · {count}문장",
+      "",
+      "{list}",
+      "",
+      "카드를 넘기며 확인해 보세요."
+    ]
+  }
 }

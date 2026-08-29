@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>듣보잡 영어 복습 카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+  /* 자막(캡션)을 모티프로 삼았다 — 출처가 쇼츠 영상이고, 카드가 하는 일도
+     화면 아래 자막처럼 "한 줄을 띄우고 뜻을 붙이는" 것이라서. */
+  :root {
+    --bg: #e9ecec; --surface: #ffffff; --plate: #16181c;
+    --ink: #14161a; --on-plate: #f4f6f6; --muted: #5f6872; --line: #d6dbda;
+    --accent: #f0c000; --accent-ink: #7a6000;
+    --no: #b8384f; --mid: #4f7396; --ok: #2c7f57;
+    --shadow: 0 1px 2px rgba(16,20,24,.05), 0 10px 30px rgba(16,20,24,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1013; --surface: #181b20; --plate: #05060700;
+      --ink: #eef1f2; --on-plate: #f4f6f6; --muted: #99a2ac; --line: #262b32;
+      --accent: #ffd54a; --accent-ink: #ffd54a;
+      --no: #e0697e; --mid: #85a9cd; --ok: #62b98c;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1013; --surface: #181b20; --plate: #05060700;
+    --ink: #eef1f2; --on-plate: #f4f6f6; --muted: #99a2ac; --line: #262b32;
+    --accent: #ffd54a; --accent-ink: #ffd54a;
+    --no: #e0697e; --mid: #85a9cd; --ok: #62b98c;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    line-height: 1.5;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  .wrap { max-width: 540px; margin: 0 auto; padding: 18px 16px 36px; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, "Consolas", monospace; font-variant-numeric: tabular-nums; }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  h1 { font-size: 14px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  h1 em { font-style: normal; color: var(--muted); font-weight: 400; }
+  .counter { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+  .tab {
+    flex: 1; padding: 10px 8px; border: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); border-radius: 4px; font-family: inherit; font-size: 13px;
+    font-weight: 500; cursor: pointer;
+  }
+  .tab[aria-selected="true"] { color: var(--ink); border-color: var(--ink); font-weight: 600; }
+
+  .modes { display: flex; gap: 0; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .mode {
+    flex: 1; padding: 8px 4px; border: 0; border-right: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); font-family: inherit; font-size: 12px; cursor: pointer;
+  }
+  .mode:last-child { border-right: 0; }
+  .mode[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
+
+  /* 스크럽 바 — 영상 진행바처럼 */
+  .scrub { height: 2px; background: var(--line); margin-bottom: 18px; position: relative; }
+  .scrub i { position: absolute; inset: 0 auto 0 0; background: var(--accent); width: 0; transition: width .2s ease; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: var(--shadow); overflow: hidden; cursor: pointer; user-select: none;
+  }
+  .card .stamp {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 14px; border-bottom: 1px solid var(--line);
+    font-size: 11px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase;
+  }
+  .card .stamp b { color: var(--accent-ink); font-weight: 500; }
+  .face {
+    padding: 46px 22px; min-height: 190px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .face .line { font-size: 26px; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; word-break: keep-all; }
+  .face .line.en { font-size: 24px; letter-spacing: -.01em; }
+  .prompt { margin-top: 20px; font-size: 12px; color: var(--muted); }
+
+  /* 뒷면 — 자막 판 */
+  .plate { background: var(--plate); padding: 24px 20px; text-align: center; }
+  .plate .lbl { font-size: 10px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
+  .plate .txt { font-size: 22px; font-weight: 600; color: var(--on-plate); text-wrap: balance; word-break: keep-all; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .plate { border-top: 1px solid var(--line); }
+    :root:not([data-theme="light"]) .plate .txt { color: var(--accent); }
+  }
+  :root[data-theme="dark"] .plate { border-top: 1px solid var(--line); }
+  :root[data-theme="dark"] .plate .txt { color: var(--accent); }
+  .plate a { display: inline-block; margin-top: 14px; font-size: 12px; color: var(--muted); text-decoration: none; border-bottom: 1px solid currentColor; }
+
+  .grade { display: none; gap: 8px; margin-top: 12px; }
+  .grade.on { display: flex; }
+  .grade button {
+    flex: 1; padding: 14px 4px; border-radius: 4px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink); font-family: inherit; font-size: 14px;
+    font-weight: 600; cursor: pointer;
+  }
+  .grade .g0 { border-color: var(--no); color: var(--no); }
+  .grade .g1 { border-color: var(--mid); color: var(--mid); }
+  .grade .g2 { border-color: var(--ok); color: var(--ok); }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 12px; color: var(--muted); }
+  .foot a { color: var(--muted); }
+
+  .done { text-align: center; padding: 34px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+  .done h2 { font-size: 18px; margin: 0 0 6px; font-weight: 600; }
+  .done p { color: var(--muted); font-size: 13px; margin: 0 0 20px; }
+  .tally { display: flex; gap: 18px; justify-content: center; margin-bottom: 22px; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+  .tally b { display: block; font-size: 24px; font-weight: 600; }
+  .btn {
+    padding: 12px 18px; border-radius: 4px; border: 1px solid var(--ink); background: var(--ink);
+    color: var(--bg); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; margin: 0 4px;
+  }
+  .btn.ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+  .empty { text-align: center; color: var(--muted); padding: 48px 12px; font-size: 13px; line-height: 1.7; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>듣보잡 영어 <em>복습 카드</em></h1>
+    <div class="counter mono" id="count"></div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab" id="tabWeek" aria-selected="true">이번 주</button>
+    <button class="tab" id="tabAll" aria-selected="false">누적 연습</button>
+  </div>
+
+  <div class="modes">
+    <button class="mode" data-dir="ko2en" aria-pressed="true">한글 → 영어</button>
+    <button class="mode" data-dir="en2ko" aria-pressed="false">영어 → 한글</button>
+    <button class="mode" data-dir="mix" aria-pressed="false">섞기</button>
+  </div>
+
+  <div class="scrub"><i id="prog"></i></div>
+  <div id="stage"></div>
+
+  <div class="foot">
+    <span id="footNote"></span>
+    <a href="#" id="reset">기록 지우기</a>
+  </div>
+</div>
+
+<script>
+var DATA = {"startDate":"2026-08-24","skipNos":[2,3,5,6,8],"cards":[{"no":1,"en":"I WOULDN\u0027T EVEN KNOW WHERE TO START","ko":"어디서부터 시작해야 할지도 모르겠어","url":"https://www.youtube.com/shorts/xOGL7_knAyg"},{"no":2,"en":"YOUR GUESS IS AS GOOD AS MINE","ko":"나도 너만큼이나 몰라","url":"https://www.youtube.com/shorts/B4j3i5W4lfc"},{"no":3,"en":"WORKS LIKE A CHARM","ko":"기가 막히게 잘 되네","url":"https://www.youtube.com/shorts/xNx0VsGPYlI"},{"no":4,"en":"THAT\u0027S NOT A THING","ko":"그런 건 없어","url":"https://www.youtube.com/shorts/tUAHzvO7nxc"},{"no":5,"en":"I\u0027M WITH YOU SO FAR","ko":"여기까진 이해했어","url":"https://www.youtube.com/shorts/WtYJH0N0BNo"},{"no":6,"en":"THAT DOES IT","ko":"더는 못 참아","url":"https://www.youtube.com/shorts/madiKAnQslA"},{"no":7,"en":"IS THAT RIGHT?","ko":"그래? 정말이야?","url":"https://www.youtube.com/shorts/m4xqO3oxJQI"},{"no":8,"en":"COMES WITH THE TERRITORY","ko":"그 일 하면 당연히 따라오는 거야","url":"https://www.youtube.com/shorts/vDjn7uwvgEQ"},{"no":9,"en":"WOULDN\u0027T THAT BE SOMETHING?","ko":"그러면 정말 대단하지 않겠어?","url":"https://www.youtube.com/shorts/_ONdvsvycik"},{"no":10,"en":"WHO AM I KIDDING?","ko":"내가 누굴 속이겠어 (솔직히 아니잖아)","url":"https://www.youtube.com/shorts/GsrM81O0x6I"},{"no":11,"en":"THAT\u0027S A BIG IF","ko":"그게 될지가 문제지","url":"https://www.youtube.com/shorts/gtCUMeUjWW0"},{"no":12,"en":"ONE LESS THING TO WORRY ABOUT","ko":"걱정거리 하나 줄었네","url":"https://www.youtube.com/shorts/zb2i_BMD6Jg"},{"no":13,"en":"NOT BY A LONG SHOT","ko":"어림도 없어","url":"https://www.youtube.com/shorts/X70Pw7FUwl8"},{"no":14,"en":"DON\u0027T HOLD THAT AGAINST ME","ko":"그걸로 나 미워하지 마","url":"https://www.youtube.com/shorts/p8amDqyC7WI"},{"no":15,"en":"I WOULDN\u0027T COUNT ON IT","ko":"기대 안 하는 게 좋아","url":"https://www.youtube.com/shorts/SR-Dhiu2tnY"},{"no":16,"en":"I REST MY CASE","ko":"내 말이 그 말이야","url":"https://www.youtube.com/shorts/VOF6ntV8oXc"},{"no":17,"en":"GET A LOAD OF THIS","ko":"이것 좀 봐","url":"https://www.youtube.com/shorts/vx1lP2q2JW0"},{"no":18,"en":"I\u0027LL GRANT YOU THAT","ko":"그건 인정할게","url":"https://www.youtube.com/shorts/41xouw08M9s"},{"no":19,"en":"COULD\u0027VE FOOLED ME","ko":"전혀 그렇게 안 보이는데","url":"https://www.youtube.com/shorts/AKse2KXC5m8"},{"no":20,"en":"YOU TOOK THE WORDS RIGHT OUT OF MY MOUTH","ko":"내가 하려던 말이야","url":"https://www.youtube.com/shorts/wAt3gf1bj2M"},{"no":21,"en":"YOU\u0027RE ON THIN ICE","ko":"너 지금 아슬아슬해","url":"https://www.youtube.com/shorts/LnK8OwfQYS8"},{"no":22,"en":"DON\u0027T SELL YOURSELF SHORT","ko":"자신을 과소평가하지 마","url":"https://www.youtube.com/shorts/js0l3I-2GBs"},{"no":23,"en":"HOW\u0027S THAT WORKING OUT FOR YOU?","ko":"그래서 그게 잘 되고 있어?","url":"https://www.youtube.com/shorts/GBdBEaIiouY"},{"no":24,"en":"AIN\u0027T THAT THE TRUTH?","ko":"그러게 말이야","url":"https://www.youtube.com/shorts/jk5R3AT_PTQ"},{"no":25,"en":"I HEAR THAT","ko":"무슨 말인지 알아, 공감해","url":"https://www.youtube.com/shorts/liKY3lOSVYo"},{"no":26,"en":"THAT\u0027S NOT HOW THIS WORKS","ko":"그런 식으로 되는 게 아니야","url":"https://www.youtube.com/shorts/xw6K6sjwVYQ"},{"no":27,"en":"I WALKED RIGHT INTO THAT ONE","ko":"내가 자초했네","url":"https://www.youtube.com/shorts/IFtcsvl2Yh8"},{"no":28,"en":"I\u0027LL TAKE THAT AS A YES","ko":"그럼 그렇다는 걸로 알게","url":"https://www.youtube.com/shorts/2vMWnkz8ufU"},{"no":29,"en":"WHAT ELSE IS NEW?","ko":"뭐 새삼스러운 일도 아니지","url":"https://www.youtube.com/shorts/XwdB__DA87M"},{"no":30,"en":"THAT\u0027S A HARD PASS","ko":"그건 정중히 사양할게","url":"https://www.youtube.com/shorts/aJsQhTUHamo"},{"no":31,"en":"I CAN\u0027T QUITE PLACE IT","ko":"뭔지 딱 집어 말을 못 하겠어","url":"https://www.youtube.com/shorts/2lmbXciB0V8"},{"no":32,"en":"I\u0027M GONNA WING IT","ko":"즉흥으로 해볼래","url":"https://www.youtube.com/shorts/l2_ZqRJ8rZE"},{"no":33,"en":"I\u0027M NOT CUT OUT FOR THIS","ko":"난 이런 거에 안 맞아","url":"https://www.youtube.com/shorts/ffdYsDjjlxE"},{"no":34,"en":"I\u0027LL SIT THIS ONE OUT","ko":"이번엔 빠질게","url":"https://www.youtube.com/shorts/Dej_o4Z1lds"},{"no":35,"en":"WE\u0027RE WAY PAST THAT","ko":"그 단계는 한참 지났어","url":"https://www.youtube.com/shorts/sbYaHNChQbQ"},{"no":36,"en":"IT CUTS BOTH WAYS","ko":"그건 양쪽 다 마찬가지야","url":"https://www.youtube.com/shorts/0KMB_Wvx0e8"},{"no":37,"en":"I CAN\u0027T KEEP THIS UP","ko":"이렇게 계속은 못 하겠어","url":"https://www.youtube.com/shorts/AL-3d2_Quws"},{"no":38,"en":"THAT ABOUT COVERS IT","ko":"그 정도면 다 된 것 같아","url":"https://www.youtube.com/shorts/Z5F6htERzko"},{"no":39,"en":"CAN\u0027T WIN THEM ALL","ko":"다 이길 순 없지","url":"https://www.youtube.com/shorts/2KpBTVnNZ1M"},{"no":40,"en":"I\u0027M GONNA HOLD YOU TO THAT","ko":"그 말 꼭 지켜야 해","url":"https://www.youtube.com/shorts/R--1gnRuQmc"},{"no":41,"en":"APPARENTLY NOT","ko":"아닌가 보네","url":"https://www.youtube.com/shorts/MkF2FA6znF8"},{"no":42,"en":"YOU\u0027RE ASKING FOR TROUBLE","ko":"너 사서 고생하는 거야","url":"https://www.youtube.com/shorts/3SR1z4zqs5k"},{"no":43,"en":"THAT SHOULD DO IT","ko":"그럼 됐을 거야","url":"https://www.youtube.com/shorts/g435w4YCIrM"},{"no":44,"en":"IT\u0027S NOT OVER YET","ko":"아직 안 끝났어","url":"https://www.youtube.com/shorts/-UNRNSFkJDg"},{"no":45,"en":"THAT\u0027S BENEATH YOU","ko":"너답지 않은 짓이야","url":"https://www.youtube.com/shorts/ccDih99bPT8"},{"no":46,"en":"THAT\u0027S THAT","ko":"그걸로 끝이야","url":"https://www.youtube.com/shorts/2FUL_74KPB0"},{"no":47,"en":"I WASN\u0027T BORN YESTERDAY","ko":"내가 그렇게 어수룩해 보여?","url":"https://www.youtube.com/shorts/x9lX48EU3QA"},{"no":48,"en":"I\u0027M GETTING THERE","ko":"조금씩 되고 있어","url":"https://www.youtube.com/shorts/4aF_sYmGwb8"},{"no":49,"en":"WHAT GIVES?","ko":"대체 무슨 일이야?","url":"https://www.youtube.com/shorts/dh83eGasa9A"},{"no":50,"en":"YOU ARE IMPOSSIBLE","ko":"너 진짜 못 말린다","url":"https://www.youtube.com/shorts/5PPfCHOdb9I"},{"no":51,"en":"SO MUCH FOR THAT","ko":"그건 그렇게 끝났네","url":"https://www.youtube.com/shorts/MSu5aho-RfY"},{"no":52,"en":"DON\u0027T TEMPT ME","ko":"나 흔들리게 하지 마","url":"https://www.youtube.com/shorts/99UYJAncbes"},{"no":53,"en":"THIS AIN\u0027T IT","ko":"이건 아니야","url":"https://www.youtube.com/shorts/psGlJ1mWDjs"},{"no":54,"en":"THE SKY\u0027S THE LIMIT","ko":"한계란 없어","url":"https://www.youtube.com/shorts/ltjAx3Rz8D0"},{"no":55,"en":"THAT\u0027S MESSED UP","ko":"그건 진짜 너무했다","url":"https://www.youtube.com/shorts/1h8UTnGPGKs"},{"no":56,"en":"WHAT DO THEY HAVE ON YOU?","ko":"걔들이 네 약점을 뭘 쥐고 있는 거야?","url":"https://www.youtube.com/shorts/OMKfZUVWkGk"},{"no":57,"en":"YOU REALIZE THAT, RIGHT?","ko":"그거 알고 있는 거지?","url":"https://www.youtube.com/shorts/JfV_U_8MbbY"},{"no":58,"en":"YOU CAUGHT ME OFF GUARD","ko":"너 때문에 허 찔렸어","url":"https://www.youtube.com/shorts/ijqxDY5H1VM"},{"no":59,"en":"DON\u0027T PUSH YOUR LUCK","ko":"너무 욕심부리지 마","url":"https://www.youtube.com/shorts/p5lx2aiqJa8"},{"no":60,"en":"GET REAL","ko":"현실을 봐","url":"https://www.youtube.com/shorts/K7RnLZKOc2k"},{"no":61,"en":"WHERE DO YOU GET OFF?","ko":"무슨 자격으로 그런 소릴 해?","url":"https://www.youtube.com/shorts/PNR6dys6cl4"},{"no":62,"en":"THAT\u0027S EASIER SAID THAN DONE","ko":"말이야 쉽지","url":"https://www.youtube.com/shorts/cN_0rrcqUmI"},{"no":63,"en":"THAT\u0027S A NEW LOW","ko":"이보다 더 최악일 순 없다","url":"https://www.youtube.com/shorts/73Pl9FmqW-Q"},{"no":64,"en":"I\u0027M ONTO SOMETHING","ko":"뭔가 실마리를 잡은 것 같아","url":"https://www.youtube.com/shorts/OkeVp_4dh_M"},{"no":65,"en":"LET\u0027S KEEP IT SIMPLE","ko":"간단하게 가자","url":"https://www.youtube.com/shorts/JwSnUGGQOwI"},{"no":66,"en":"I\u0027M NOT BUYING IT","ko":"난 안 믿어","url":"https://www.youtube.com/shorts/NYo8f38Hf0k"},{"no":67,"en":"YOU\u0027VE LOST ME","ko":"무슨 말인지 못 따라가겠어","url":"https://www.youtube.com/shorts/rD6o_LyGB-U"},{"no":68,"en":"THAT\u0027S A TOUGH SELL","ko":"그건 설득하기 어렵겠는데","url":"https://www.youtube.com/shorts/rTpnbRFWZus"},{"no":69,"en":"I HAD IT COMING","ko":"그럴 만했지, 자업자득이야","url":"https://www.youtube.com/shorts/txHw9oE34IU"},{"no":70,"en":"I\u0027M CALLING YOUR BLUFF","ko":"허풍인지 한번 보자","url":"https://www.youtube.com/shorts/R80D7heWx88"},{"no":71,"en":"WHY BOTHER?","ko":"뭐하러 그래?","url":"https://www.youtube.com/shorts/-zD0IQEZyk4"},{"no":72,"en":"I\u0027LL LET IT SLIDE THIS TIME","ko":"이번엔 넘어가 줄게","url":"https://www.youtube.com/shorts/2v_ju0RnlNk"},{"no":73,"en":"I\u0027M A LITTLE ON EDGE","ko":"좀 예민해져 있어","url":"https://www.youtube.com/shorts/owhXVsfsGTw"},{"no":74,"en":"SERVES YOU RIGHT","ko":"그래도 싸다","url":"https://www.youtube.com/shorts/jxRjQqygrNc"},{"no":75,"en":"WHAT ARE YOU DOING UP?","ko":"안 자고 뭐 해?","url":"https://www.youtube.com/shorts/-bCY_WhYS6Q"},{"no":76,"en":"YOU GOT ME THERE","ko":"그건 네 말이 맞네","url":"https://www.youtube.com/shorts/1Wmk70w5TtA"},{"no":77,"en":"THAT\u0027S CUTTING IT CLOSE","ko":"아슬아슬하네","url":"https://www.youtube.com/shorts/AMWeeqaFfmc"},{"no":78,"en":"WHAT\u0027S ON YOUR MIND?","ko":"무슨 생각 하고 있어?","url":"https://www.youtube.com/shorts/hB-Iu7uqp4Q"},{"no":79,"en":"THAT CAME OUT WRONG","ko":"말이 잘못 나왔어","url":"https://www.youtube.com/shorts/b1ca1kuOqwA"},{"no":80,"en":"LEAVE IT WITH ME","ko":"나한테 맡겨","url":"https://www.youtube.com/shorts/Cl1YRIRgnpc"},{"no":81,"en":"YOU\u0027RE FULL OF IT","ko":"너 완전 뻥이야","url":"https://www.youtube.com/shorts/csyLcm2CkFw"},{"no":82,"en":"THAT\u0027S NOT GONNA FLY","ko":"그건 안 통해","url":"https://www.youtube.com/shorts/1MvmkVF8H7c"},{"no":83,"en":"WHAT ARE YOU AFRAID OF?","ko":"뭐가 그렇게 무서운데?","url":"https://www.youtube.com/shorts/V03ZqZ02Rac"},{"no":84,"en":"PICK YOUR BATTLES","ko":"싸울 때를 골라","url":"https://www.youtube.com/shorts/BZ21flqyNPg"},{"no":85,"en":"I DIDN\u0027T SIGN UP FOR THIS","ko":"이러려고 한 거 아닌데","url":"https://www.youtube.com/shorts/b8AUl9zmbkI"},{"no":86,"en":"I\u0027LL LET YOU CATCH UP","ko":"둘이 얘기 나눠, 난 빠질게","url":"https://www.youtube.com/shorts/UIigzJr9fv8"},{"no":87,"en":"YOU HAVE NO IDEA WHAT YOU\u0027RE UP AGAINST","ko":"네가 뭘 상대하는지 전혀 몰라","url":"https://www.youtube.com/shorts/EDT_-Akj1CE"},{"no":88,"en":"THAT CHECKS OUT","ko":"말 되네, 확인됐어","url":"https://www.youtube.com/shorts/1_lLhh9FgV4"},{"no":89,"en":"WHAT\u0027S YOUR TAKE?","ko":"네 생각은 어때?","url":"https://www.youtube.com/shorts/L1NdI_9A4c0"},{"no":90,"en":"IT KIND OF IS","ko":"좀 그렇긴 해","url":"https://www.youtube.com/shorts/BFD-7LMGrV0"},{"no":91,"en":"SAME OLD SAME OLD","ko":"늘 똑같지 뭐","url":"https://www.youtube.com/shorts/wqKO8F9lrl0"},{"no":92,"en":"THIS HAS NOTHING TO DO WITH YOU","ko":"이건 너랑 상관없는 일이야","url":"https://www.youtube.com/shorts/_HSjgEh0Wb4"},{"no":93,"en":"I WAS JUST ABOUT TO","ko":"막 하려던 참이었어","url":"https://www.youtube.com/shorts/-sKuySEIdgc"},{"no":94,"en":"DO YOU WANT SOME COMPANY?","ko":"같이 있어 줄까?","url":"https://www.youtube.com/shorts/t8x0OW6Hs1Y"},{"no":95,"en":"COME AGAIN?","ko":"뭐라고? 다시 말해줄래?","url":"https://www.youtube.com/shorts/88KBs1qogwU"},{"no":96,"en":"THAT\u0027S ONE WAY TO PUT IT","ko":"그렇게 표현할 수도 있겠네","url":"https://www.youtube.com/shorts/vbwe3vySaGc"},{"no":97,"en":"ANY DAY NOW","ko":"이제 곧이야","url":"https://www.youtube.com/shorts/voupWmzz-zw"},{"no":98,"en":"WHY WOULD YOU DO A THING LIKE THAT?","ko":"왜 그런 짓을 한 거야?","url":"https://www.youtube.com/shorts/3CTmUCV24Cs"},{"no":99,"en":"LET ME CUT TO THE CHASE","ko":"본론만 말할게","url":"https://www.youtube.com/shorts/SfrvslBtj9c"},{"no":100,"en":"FIRE AWAY","ko":"얼마든지 물어봐","url":"https://www.youtube.com/shorts/6CIEWnqNSH0"},{"no":101,"en":"HOW WOULD YOU KNOW THAT?","ko":"그걸 네가 어떻게 알아?","url":"https://www.youtube.com/shorts/uP_Wptp3k3E"},{"no":102,"en":"ARE WE STILL ON FOR TOMORROW?","ko":"내일 약속 그대로지?","url":"https://www.youtube.com/shorts/Y7R3dl-fweI"},{"no":103,"en":"I LIKE THAT ABOUT YOU","ko":"네 그런 점이 좋아","url":"https://www.youtube.com/shorts/kEBUg4lRKR0"},{"no":104,"en":"LET ME GET BACK TO YOU","ko":"나중에 다시 알려줄게","url":"https://www.youtube.com/shorts/d_fYYDUxeAg"},{"no":105,"en":"STAY IN YOUR LANE","ko":"네 일이나 신경 써","url":"https://www.youtube.com/shorts/iWjQ3aQlxm4"},{"no":106,"en":"NOT EVEN A LITTLE","ko":"조금도 아니야","url":"https://www.youtube.com/shorts/h8YtplQj1jw"},{"no":107,"en":"CAN YOU HANDLE THIS?","ko":"이거 감당할 수 있겠어?","url":"https://www.youtube.com/shorts/aRg8D1kFjDs"},{"no":108,"en":"I WOULDN\u0027T SAY THAT","ko":"꼭 그렇진 않아","url":"https://www.youtube.com/shorts/EdanBsQlap8"},{"no":109,"en":"WE\u0027LL FIGURE IT OUT","ko":"어떻게든 방법을 찾을 거야","url":"https://www.youtube.com/shorts/SWcvupCH8Ic"},{"no":110,"en":"WHAT HAVE YOU BEEN UP TO?","ko":"그동안 뭐 하고 지냈어?","url":"https://www.youtube.com/shorts/W4mcaLc_P9c"},{"no":111,"en":"HOW DID WE GET HERE?","ko":"어쩌다 이렇게 됐지?","url":"https://www.youtube.com/shorts/d9n6x5B3DuM"},{"no":112,"en":"DON\u0027T HOLD YOUR BREATH","ko":"기대하지 마","url":"https://www.youtube.com/shorts/KhNPIE-hxTQ"},{"no":113,"en":"COULD YOU SPEAK UP?","ko":"좀 크게 말해 줄래?","url":"https://www.youtube.com/shorts/kgaVjk0vMBE"},{"no":114,"en":"WHAT DO YOU RECKON?","ko":"어떻게 생각해?","url":"https://www.youtube.com/shorts/ODqlltVUZ3k"},{"no":115,"en":"TRUST YOUR GUT","ko":"직감을 믿어","url":"https://www.youtube.com/shorts/wOLJBMVLHqU"},{"no":116,"en":"WHAT\u0027S THAT ABOUT?","ko":"그건 왜 그런 거야?","url":"https://www.youtube.com/shorts/5aedDSymAH0"},{"no":117,"en":"SUIT YOURSELF","ko":"마음대로 해","url":"https://www.youtube.com/shorts/kh8hO_hQJAI"},{"no":118,"en":"LET\u0027S JUST LEAVE IT AT THAT","ko":"그쯤 해두자","url":"https://www.youtube.com/shorts/caJ-UazCEYw"},{"no":119,"en":"HOW BAD CAN IT BE?","ko":"나빠 봤자지","url":"https://www.youtube.com/shorts/y7AH6SYyPrw"},{"no":120,"en":"THERE\u0027S NO SHAME IN IT","ko":"부끄러워할 일 아니야","url":"https://www.youtube.com/shorts/BwfU0q-8g5c"},{"no":121,"en":"HOW IS IT COMING ALONG?","ko":"잘 돼 가?","url":"https://www.youtube.com/shorts/oWr3Idbu0ko"},{"no":122,"en":"DON\u0027T LET IT GO TO YOUR HEAD","ko":"우쭐대지 마","url":"https://www.youtube.com/shorts/KFn4qzIcmsk"},{"no":123,"en":"YOU\u0027LL GET THROUGH THIS","ko":"넌 이겨낼 거야","url":"https://www.youtube.com/shorts/-jsrJURf9P0"},{"no":124,"en":"WHERE DO WE STAND?","ko":"우리 지금 어떤 상황이야?","url":"https://www.youtube.com/shorts/q3T83ZDcS-M"},{"no":125,"en":"I WOULDN\u0027T BET ON IT","ko":"장담 못 해","url":"https://www.youtube.com/shorts/qGwDSvise24"},{"no":126,"en":"NEVER HURTS TO ASK","ko":"물어봐서 나쁠 건 없지","url":"https://www.youtube.com/shorts/QgARCnse8Xw"},{"no":127,"en":"WHAT\u0027S YOUR DEAL?","ko":"너 왜 그러는 거야?","url":"https://www.youtube.com/shorts/FCxHOoPtLCQ"},{"no":128,"en":"IT LOOKS LIKE IT","ko":"그런 것 같네","url":"https://www.youtube.com/shorts/_vPcW21QbW0"},{"no":129,"en":"THAT\u0027S A STRETCH","ko":"그건 좀 억지야","url":"https://www.youtube.com/shorts/sHp5WO5PgsI"},{"no":130,"en":"I\u0027LL TAKE IT","ko":"그걸로 할게","url":"https://www.youtube.com/shorts/6UD0x8nlFYM"},{"no":131,"en":"LET\u0027S AGREE TO DISAGREE","ko":"서로 생각이 다른 걸로 하자","url":"https://www.youtube.com/shorts/Wzk1iYNvZSo"},{"no":132,"en":"DON\u0027T PUT THIS ON ME","ko":"이걸 내 탓으로 돌리지 마","url":"https://www.youtube.com/shorts/wtn1Ci_SdWY"},{"no":133,"en":"THERE\u0027S NO TURNING BACK","ko":"이제 돌이킬 수 없어","url":"https://www.youtube.com/shorts/VbBrpqWXolI"},{"no":134,"en":"YOU COULDN\u0027T POSSIBLY UNDERSTAND","ko":"넌 절대 이해 못 해","url":"https://www.youtube.com/shorts/KhYV7T0YSq8"},{"no":135,"en":"I\u0027LL TAKE A RAIN CHECK","ko":"다음 기회로 미룰게","url":"https://www.youtube.com/shorts/BV7vNf8iu80"},{"no":136,"en":"THERE\u0027S A LOT GOING ON","ko":"이래저래 일이 많아","url":"https://www.youtube.com/shorts/t7h0ttv2M-Q"},{"no":137,"en":"I MEAN... YEAH","ko":"뭐… 그렇지","url":"https://www.youtube.com/shorts/SnlaZNdfvqo"},{"no":138,"en":"YOU WON\u0027T GET AWAY WITH THIS","ko":"이러고도 무사할 줄 알아?","url":"https://www.youtube.com/shorts/Ob0fEjAg4MI"},{"no":139,"en":"IT WAS MEANT TO BE","ko":"그렇게 될 운명이었어","url":"https://www.youtube.com/shorts/OagMKU-3I0A"},{"no":140,"en":"IT\u0027S ABOVE MY PAY GRADE","ko":"그건 내 권한 밖이야","url":"https://www.youtube.com/shorts/LPAsN35iJEI"},{"no":141,"en":"IS THIS WHAT YOU WANT?","ko":"이게 네가 원하던 거야?","url":"https://www.youtube.com/shorts/Rz3ocsSp4GU"},{"no":142,"en":"ARE YOU GETTING COLD FEET?","ko":"겁먹은 거야? 마음이 흔들려?","url":"https://www.youtube.com/shorts/jty5-4cgDAM"},{"no":143,"en":"HOW MUCH DO I OWE YOU?","ko":"얼마 드리면 돼요?","url":"https://www.youtube.com/shorts/kGjfYxKQUzU"},{"no":144,"en":"THAT FIGURES","ko":"그럴 줄 알았어","url":"https://www.youtube.com/shorts/oi1gnczaYA8"},{"no":145,"en":"IT\u0027S THE THOUGHT THAT COUNTS","ko":"마음이 중요한 거지","url":"https://www.youtube.com/shorts/UUC4IV16k8Q"},{"no":146,"en":"COULD YOU KEEP IT DOWN?","ko":"조용히 좀 해줄래?","url":"https://www.youtube.com/shorts/nlLaZO4WfdM"},{"no":147,"en":"WHO DO YOU THINK YOU ARE?","ko":"네가 뭔데?","url":"https://www.youtube.com/shorts/UL0BJa-ZgW0"},{"no":148,"en":"I\u0027LL KEEP YOU POSTED","ko":"계속 알려줄게","url":"https://www.youtube.com/shorts/0RLeJ304Au0"},{"no":149,"en":"I\u0027LL SEE WHAT I CAN DO","ko":"할 수 있는지 알아볼게","url":"https://www.youtube.com/shorts/LZ_4u5WwHcA"},{"no":150,"en":"THE CAT\u0027S OUT OF THE BAG","ko":"비밀이 새어 나갔어","url":"https://www.youtube.com/shorts/QgOwRW2Uwdc"},{"no":151,"en":"YOU JUST MADE MY DAY","ko":"덕분에 오늘 기분 최고야","url":"https://www.youtube.com/shorts/60kWFQZ3efc"},{"no":152,"en":"HOW DOES THAT SOUND?","ko":"어때? 그 정도면 괜찮아?","url":"https://www.youtube.com/shorts/C7DIN3wysI4"},{"no":153,"en":"WE\u0027RE ON THE SAME PAGE","ko":"우리 생각이 같네","url":"https://www.youtube.com/shorts/B5Cl57vUdE4"},{"no":154,"en":"WHERE\u0027D YOU GO TO SCHOOL?","ko":"학교 어디 나왔어?","url":"https://www.youtube.com/shorts/IVO3Ab2KwEY"},{"no":155,"en":"STEP UP YOUR GAME","ko":"실력 좀 더 끌어올려","url":"https://www.youtube.com/shorts/PXf2UPats-o"},{"no":156,"en":"I\u0027M GETTING THE HANG OF IT","ko":"슬슬 감이 와","url":"https://www.youtube.com/shorts/Ljkv2YgSCwI"},{"no":157,"en":"I\u0027M GOOD WITH THAT","ko":"난 그걸로 괜찮아","url":"https://www.youtube.com/shorts/1KQOso4xLus"},{"no":158,"en":"HOPE FOR THE BEST, PREPARE FOR THE WORST","ko":"최선을 바라되 최악에 대비해","url":"https://www.youtube.com/shorts/GmG79VAToLM"},{"no":159,"en":"CAN I HAVE A WORD WITH YOU?","ko":"잠깐 얘기 좀 할 수 있을까?","url":"https://www.youtube.com/shorts/7GW9wpnhUt4"},{"no":160,"en":"IT\u0027S A DONE DEAL","ko":"이미 다 정해진 일이야","url":"https://www.youtube.com/shorts/XjiJ6z04i4I"},{"no":161,"en":"LET\u0027S PLAY IT BY EAR","ko":"상황 봐 가면서 하자","url":"https://www.youtube.com/shorts/AJARr4Etxi8"},{"no":162,"en":"YOU\u0027VE GOT SOME NERVE","ko":"너 참 뻔뻔하다","url":"https://www.youtube.com/shorts/OvjwC3l_340"},{"no":163,"en":"WHAT\u0027S GOTTEN INTO YOU?","ko":"왜 이래, 무슨 일 있어?","url":"https://www.youtube.com/shorts/Ty40Uz-fL-0"},{"no":164,"en":"WHAT DO YOU DO FOR A LIVING?","ko":"무슨 일 하세요?","url":"https://www.youtube.com/shorts/5GF9oZuK1QI"},{"no":165,"en":"LET\u0027S GIVE IT A SHOT","ko":"한번 해보자","url":"https://www.youtube.com/shorts/uKitPcHOGbI"},{"no":166,"en":"WHAT ARE YOU UP TO?","ko":"뭐 해?","url":"https://www.youtube.com/shorts/lg703clsSkY"},{"no":167,"en":"WHERE DOES THAT LEAVE US?","ko":"그럼 우린 어떻게 되는 거야?","url":"https://www.youtube.com/shorts/Wt7cLOA3la4"},{"no":168,"en":"HOW IS THAT RELEVANT?","ko":"그게 무슨 상관이야?","url":"https://www.youtube.com/shorts/cEPJ9tbbNeI"},{"no":169,"en":"ALL\u0027S WELL THAT ENDS WELL","ko":"끝이 좋으면 다 좋은 거지","url":"https://www.youtube.com/shorts/Qa8WXhlcFXY"},{"no":170,"en":"OUT WITH THE OLD, IN WITH THE NEW","ko":"묵은 것은 보내고 새것을 맞이하자","url":"https://www.youtube.com/shorts/FXha8FKCAK0"},{"no":171,"en":"WE HAVE A LOT TO CATCH UP ON","ko":"밀린 얘기가 많네","url":"https://www.youtube.com/shorts/33xgi1p4PO8"},{"no":172,"en":"THAT\u0027S ON ME","ko":"그건 내 잘못이야","url":"https://www.youtube.com/shorts/vc008noLfwo"},{"no":173,"en":"YOU\u0027RE IN FOR A TREAT","ko":"너 기대해도 좋아","url":"https://www.youtube.com/shorts/OyXivL3qYS0"},{"no":174,"en":"WHERE ARE YOU GOING WITH THIS?","ko":"그래서 결론이 뭐야?","url":"https://www.youtube.com/shorts/UWAIpvDOv3g"},{"no":175,"en":"WHAT MAKES YOU THINK THAT?","ko":"왜 그렇게 생각해?","url":"https://www.youtube.com/shorts/xfuAr_gKZfo"},{"no":176,"en":"THAT SHIP HAS SAILED","ko":"그건 이미 지나간 일이야","url":"https://www.youtube.com/shorts/sJq3W3SiAzU"},{"no":177,"en":"WHAT DO WE HAVE TO LOSE?","ko":"밑져야 본전이잖아","url":"https://www.youtube.com/shorts/eu8efX_m94Y"},{"no":178,"en":"I\u0027M DRAWING A BLANK","ko":"머릿속이 하얘졌어","url":"https://www.youtube.com/shorts/RPbSwp16g_Y"},{"no":179,"en":"I\u0027M TURNING OVER A NEW LEAF","ko":"새사람이 되려고","url":"https://www.youtube.com/shorts/9to9k4Uwa3I"},{"no":180,"en":"THAT TRACKS","ko":"앞뒤가 맞네","url":"https://www.youtube.com/shorts/si_us6wBEXs"},{"no":181,"en":"I KNEW THIS DAY WOULD COME","ko":"이런 날이 올 줄 알았어","url":"https://www.youtube.com/shorts/S2aGdHDivh0"},{"no":182,"en":"CUT ME SOME SLACK","ko":"좀 봐줘","url":"https://www.youtube.com/shorts/YxKAnZup8gQ"},{"no":183,"en":"WHAT\u0027S THAT SUPPOSED TO MEAN?","ko":"그게 무슨 뜻이야?","url":"https://www.youtube.com/shorts/qX9SKrlYaIs"},{"no":184,"en":"YOU MIGHT AS WELL GET IT OVER WITH","ko":"이왕이면 빨리 끝내버려","url":"https://www.youtube.com/shorts/Qdet3nvQzoU"},{"no":185,"en":"YOU COULD DO A LOT WORSE","ko":"그 정도면 괜찮은 편이야","url":"https://www.youtube.com/shorts/MGrL3KH80DA"},{"no":186,"en":"YOU LOOK FAMILIAR","ko":"낯이 익으신데요","url":"https://www.youtube.com/shorts/-JPsVwAkdaA"},{"no":187,"en":"CAN WE NOT DO THIS RIGHT NOW?","ko":"지금 이러지 말자","url":"https://www.youtube.com/shorts/UOIZQRmiK3w"},{"no":188,"en":"WHO ARE WE TO JUDGE?","ko":"우리가 뭐라고 남을 판단해?","url":"https://www.youtube.com/shorts/wF5I8ZmS86c"},{"no":189,"en":"WHAT\u0027S IN THIS FOR YOU?","ko":"네가 얻는 게 뭔데?","url":"https://www.youtube.com/shorts/tGp5M-gne8M"},{"no":190,"en":"TO WHAT DO I OWE THIS PLEASURE?","ko":"어인 일로 오셨나요?","url":"https://www.youtube.com/shorts/F2nxsaIKvIw"},{"no":191,"en":"LAY IT ON ME","ko":"어디 말해봐","url":"https://www.youtube.com/shorts/mNJHv4bwRAQ"},{"no":192,"en":"NOT IF I CAN HELP IT","ko":"내가 막을 수 있는 한 안 그럴 거야","url":"https://www.youtube.com/shorts/96F_jEGwD4c"},{"no":193,"en":"JUST FOR TODAY","ko":"오늘만이라도","url":"https://www.youtube.com/shorts/UoaUG9xca78"},{"no":194,"en":"WHAT DOES THAT PROVE?","ko":"그게 뭘 증명하는데?","url":"https://www.youtube.com/shorts/xWumnZ-Qs5M"},{"no":195,"en":"WHAT IS IT YOU WANT FROM ME?","ko":"나한테 원하는 게 뭐야?","url":"https://www.youtube.com/shorts/BSDdycHajE4"},{"no":196,"en":"HOW ARE WE LOOKING?","ko":"상황 어때?","url":"https://www.youtube.com/shorts/YTjNWuQ4HqA"},{"no":197,"en":"YOU\u0027RE PUSHING IT","ko":"너 선 넘고 있어","url":"https://www.youtube.com/shorts/iwkrdrDhgus"},{"no":198,"en":"WHAT DOES THAT HAVE TO DO WITH ANYTHING?","ko":"그게 대체 무슨 상관인데?","url":"https://www.youtube.com/shorts/OS5hkOy93ck"},{"no":199,"en":"CAN YOU COVER FOR ME?","ko":"나 대신 좀 맡아줄래?","url":"https://www.youtube.com/shorts/PX5rioMow6Q"},{"no":200,"en":"I\u0027LL BACK YOU UP","ko":"내가 편들어 줄게","url":"https://www.youtube.com/shorts/QHtAr769PIc"},{"no":201,"en":"WHAT\u0027S UP WITH THAT?","ko":"그건 또 왜 그래?","url":"https://www.youtube.com/shorts/-M7mmsscj1w"},{"no":202,"en":"HOW FAR ALONG ARE YOU?","ko":"얼마나 진행됐어?","url":"https://www.youtube.com/shorts/6fxi3-blWlY"},{"no":203,"en":"I\u0027M ON THE FENCE","ko":"아직 결정 못 했어","url":"https://www.youtube.com/shorts/jgpw3snIT-4"},{"no":204,"en":"THE WRITING\u0027S ON THE WALL","ko":"이미 조짐이 다 보여","url":"https://www.youtube.com/shorts/RlY6ptKDkzc"},{"no":205,"en":"THAT\u0027S SO RANDOM","ko":"갑자기 웬 뜬금없는 소리야","url":"https://www.youtube.com/shorts/fuRpx7_4zbc"},{"no":206,"en":"I\u0027VE GOT IT COVERED","ko":"내가 다 처리해 뒀어","url":"https://www.youtube.com/shorts/OH9oS6DH28E"},{"no":207,"en":"A PICTURE\u0027S WORTH A THOUSAND WORDS","ko":"백문이 불여일견","url":"https://www.youtube.com/shorts/QnPauI8oSLE"},{"no":208,"en":"YOU\u0027VE GOT THIS","ko":"넌 할 수 있어","url":"https://www.youtube.com/shorts/ZpJx3wgIbdY"},{"no":209,"en":"WHAT WOULD YOU DO IF YOU WERE ME?","ko":"너라면 어떻게 하겠어?","url":"https://www.youtube.com/shorts/PNFVF-OOzKc"},{"no":210,"en":"ARE YOU KEEPING TABS ON ME?","ko":"너 나 감시하는 거야?","url":"https://www.youtube.com/shorts/SxUr7lXt7Hs"},{"no":211,"en":"YOU MADE YOUR BED","ko":"네가 자초한 일이야","url":"https://www.youtube.com/shorts/6Ia49Juk3V4"},{"no":212,"en":"DON\u0027T GET CUTE WITH ME","ko":"까불지 마","url":"https://www.youtube.com/shorts/eaHZ11a_iZM"},{"no":213,"en":"I\u0027LL GET THE BALL ROLLING","ko":"내가 먼저 시작할게","url":"https://www.youtube.com/shorts/LRTe-0plJ2M"},{"no":214,"en":"WHAT\u0027S EATING YOU?","ko":"뭐 때문에 그렇게 신경 쓰여?","url":"https://www.youtube.com/shorts/x17cbpE7rz4"},{"no":215,"en":"NO GOOD DEED GOES UNPUNISHED","ko":"착한 일 하고도 욕먹는 법이지","url":"https://www.youtube.com/shorts/IWA_e1QgsWk"},{"no":216,"en":"TODAY IS THE DAY","ko":"오늘이 바로 그날이야","url":"https://www.youtube.com/shorts/iUmQcXWAb9U"},{"no":217,"en":"I\u0027M ON THE CLOCK","ko":"나 지금 근무 중이야","url":"https://www.youtube.com/shorts/dpY_kOC7qD4"},{"no":218,"en":"ONE STEP AT A TIME","ko":"한 번에 하나씩","url":"https://www.youtube.com/shorts/8nr2rYP60EQ"},{"no":219,"en":"NOW YOU\u0027RE SPEAKING MY LANGUAGE","ko":"이제야 말이 통하네","url":"https://www.youtube.com/shorts/D_Yv2tEbQ7o"},{"no":220,"en":"I JUST NEEDED TO VENT","ko":"그냥 좀 털어놓고 싶었어","url":"https://www.youtube.com/shorts/Q12fufGxLgs"},{"no":221,"en":"RIP OFF THE BAND-AID","ko":"아플 거 빨리 해치워","url":"https://www.youtube.com/shorts/8iUI9v7ayQg"},{"no":222,"en":"THAT WAS A CLOSE CALL","ko":"하마터면 큰일 날 뻔했어","url":"https://www.youtube.com/shorts/RG65g0rLT5U"},{"no":223,"en":"WHAT ARE YOU GETTING AT?","ko":"무슨 말을 하려는 거야?","url":"https://www.youtube.com/shorts/TIC7cc696UE"},{"no":224,"en":"LET\u0027S JUST CALL IT QUITS","ko":"그만 끝내자","url":"https://www.youtube.com/shorts/lL29v8H5-oc"},{"no":225,"en":"I\u0027M IN OVER MY HEAD","ko":"내가 감당 못 할 일에 발을 들였어","url":"https://www.youtube.com/shorts/5dpbjBJFhio"},{"no":226,"en":"WHERE HAVE YOU BEEN KEEPING YOURSELF?","ko":"그동안 어디서 뭐 하고 지냈어?","url":"https://www.youtube.com/shorts/MUcQDIew6G8"},{"no":227,"en":"IT DOESN\u0027T RING A BELL","ko":"들어본 적 없는데","url":"https://www.youtube.com/shorts/sjWpid620Hw"},{"no":228,"en":"YOU HAVEN\u0027T LOST YOUR TOUCH","ko":"실력 여전하네","url":"https://www.youtube.com/shorts/zKfl_HGiV-c"},{"no":229,"en":"I\u0027M JUST NOT UP FOR IT","ko":"그럴 기분이 아니야","url":"https://www.youtube.com/shorts/i_azz1odI7g"},{"no":230,"en":"IT TAKES ONE TO KNOW ONE","ko":"너나 나나 똑같지","url":"https://www.youtube.com/shorts/f2Fe6H6TJCE"},{"no":231,"en":"I\u0027LL MAKE IT UP TO YOU","ko":"내가 꼭 보답할게","url":"https://www.youtube.com/shorts/bMlP0Efhp6s"},{"no":232,"en":"HOW ARE YOU HOLDING UP?","ko":"좀 견딜 만해?","url":"https://www.youtube.com/shorts/MDCpRJ3bbvU"},{"no":233,"en":"NOT THAT I KNOW OF","ko":"내가 알기론 아니야","url":"https://www.youtube.com/shorts/0OQP5ah3kJo"},{"no":234,"en":"IS THAT A THING?","ko":"그런 게 있어?","url":"https://www.youtube.com/shorts/aYvqAVr5PTU"},{"no":235,"en":"WHY WOULD WE DO THAT?","ko":"우리가 왜 그래야 하는데?","url":"https://www.youtube.com/shorts/6_F5yJ7hkeo"}]};
+
+// ── 이번 주 카드 번호 정하기 ────────────────────────────────────────────────
+// 1) URL 파라미터 ?w=11,12,13  2) 없으면 시작일·평일·제외번호로 역산
+function paramNos() {
+  var q = (location.search + location.hash).match(/[?&#]w=([0-9,\-]+)/);
+  if (!q) return null;
+  var out = [];
+  q[1].split(',').forEach(function (part) {
+    var m = part.match(/^(\d+)-(\d+)$/);
+    if (m) { for (var i = +m[1]; i <= +m[2]; i++) out.push(i); }
+    else if (part) out.push(+part);
+  });
+  return out.length ? out : null;
+}
+
+function kstToday() {
+  var now = new Date();
+  return new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (9 * 3600000));
+}
+
+// 발송 규칙대로 순서를 만든다: 시작 번호부터, 제외 번호는 건너뛰며 평일마다 하나씩
+function scheduleUpTo(date) {
+  var skip = {};
+  DATA.skipNos.forEach(function (n) { skip[n] = 1; });
+  var order = DATA.cards.map(function (c) { return c.no; }).filter(function (n) { return !skip[n]; });
+  var d = new Date(DATA.startDate + 'T00:00:00Z'), sent = [], i = 0;
+  while (d <= date && i < order.length) {
+    var day = d.getUTCDay();
+    if (day >= 1 && day <= 5) { sent.push(order[i]); i++; }
+    d = new Date(d.getTime() + 86400000);
+  }
+  return sent;
+}
+
+function weekNos() {
+  var p = paramNos();
+  if (p) return p;
+  return scheduleUpTo(kstToday()).slice(-5);
+}
+
+// ── 기록 (이 기기에만 저장) ─────────────────────────────────────────────────
+var KEY = 'dbj-cards-v1';
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || { seen: {}, nos: [] }; }
+  catch (e) { return { seen: {}, nos: [] }; }
+}
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { } }
+
+var state = loadState();
+var byNo = {};
+DATA.cards.forEach(function (c) { byNo[c.no] = c; });
+
+// 이번 주 번호를 누적 목록에 합쳐 둔다 (누적 연습용)
+(function () {
+  var w = weekNos(), changed = false;
+  w.forEach(function (n) { if (state.nos.indexOf(n) < 0) { state.nos.push(n); changed = true; } });
+  if (changed) { state.nos.sort(function (a, b) { return a - b; }); saveState(state); }
+})();
+
+// ── 세션 ────────────────────────────────────────────────────────────────────
+var dir = 'ko2en', scope = 'week', queue = [], idx = 0, flipped = false;
+var tally = { 0: 0, 1: 0, 2: 0 }, again = [];
+
+function pickAll() {
+  // 누적: 최근에 틀린 것 먼저, 잘 아는 것은 가끔만. 최대 20장.
+  var pool = state.nos.slice();
+  if (!pool.length) pool = scheduleUpTo(kstToday());
+  var scored = pool.map(function (n) {
+    var s = state.seen[n];
+    var weight = s ? (s.g === 0 ? 3 : s.g === 1 ? 2 : 0.6) : 2.5;
+    return { no: n, w: weight * (0.6 + Math.random()) };
+  });
+  scored.sort(function (a, b) { return b.w - a.w; });
+  return scored.slice(0, 20).map(function (x) { return x.no; });
+}
+
+function startSession(nos) {
+  queue = nos.filter(function (n) { return byNo[n]; });
+  idx = 0; flipped = false; tally = { 0: 0, 1: 0, 2: 0 }; again = [];
+  render();
+}
+
+function currentDir() {
+  if (dir !== 'mix') return dir;
+  return (idx % 2 === 0) ? 'ko2en' : 'en2ko';
+}
+
+function render() {
+  var stage = document.getElementById('stage');
+  var prog = document.getElementById('prog');
+  var count = document.getElementById('count');
+  var note = document.getElementById('footNote');
+
+  note.textContent = scope === 'week'
+    ? '이번 주 ' + queue.length + '문장'
+    : '누적 ' + state.nos.length + '문장 중 ' + queue.length + '장';
+
+  if (!queue.length) {
+    count.textContent = '';
+    prog.style.width = '0';
+    stage.innerHTML = '<div class="empty">아직 복습할 카드가 없습니다.<br>평일 아침 문장을 받은 뒤 토요일에 열어 보세요.</div>';
+    return;
+  }
+
+  if (idx >= queue.length) {
+    prog.style.width = '100%';
+    count.textContent = queue.length + ' / ' + queue.length;
+    var retry = again.length ? '<button class="btn" id="retry">헷갈린 ' + again.length + '장 다시</button>' : '';
+    stage.innerHTML =
+      '<div class="done"><h2>한 바퀴 끝</h2><p>' +
+      (again.length ? '모름·애매로 표시한 것만 다시 볼까요?' : '전부 알고 계시네요.') + '</p>' +
+      '<div class="tally">' +
+      '<div style="color:var(--no)"><b class="mono">' + tally[0] + '</b>모름</div>' +
+      '<div style="color:var(--mid)"><b class="mono">' + tally[1] + '</b>애매</div>' +
+      '<div style="color:var(--ok)"><b class="mono">' + tally[2] + '</b>알아</div></div>' +
+      retry + '<button class="btn ghost" id="restart">처음부터</button></div>';
+    var r = document.getElementById('retry');
+    if (r) r.onclick = function () { startSession(again.slice()); };
+    document.getElementById('restart').onclick = function () { startSession(queue.slice()); };
+    return;
+  }
+
+  var card = byNo[queue[idx]];
+  var d = currentDir();
+  var frontTxt = d === 'ko2en' ? card.ko : card.en;
+  var backTxt = d === 'ko2en' ? card.en : card.ko;
+  var frontLabel = d === 'ko2en' ? '한글' : 'English';
+  var backLabel = d === 'ko2en' ? 'English' : '한글';
+
+  count.textContent = (idx + 1) + ' / ' + queue.length;
+  prog.style.width = Math.round((idx / queue.length) * 100) + '%';
+
+  stage.innerHTML =
+    '<div class="card" id="card">' +
+    '<div class="stamp mono"><span>' + frontLabel + '</span><b>#' + String(card.no).padStart(3, '0') + '</b></div>' +
+    '<div class="face"><div class="line' + (d === 'en2ko' ? ' en' : '') + '">' + esc(frontTxt) + '</div>' +
+    (flipped ? '' : '<div class="prompt">먼저 소리 내어 답해 보세요 · 탭하면 정답</div>') + '</div>' +
+    (flipped
+      ? '<div class="plate"><div class="lbl mono">' + backLabel + '</div><div class="txt">' + esc(backTxt) + '</div>' +
+        (card.url ? '<a href="' + card.url + '" target="_blank" rel="noopener">쇼츠로 확인하기</a>' : '') + '</div>'
+      : '') +
+    '</div>' +
+    '<div class="grade' + (flipped ? ' on' : '') + '">' +
+    '<button class="g0" data-g="0">모름</button>' +
+    '<button class="g1" data-g="1">애매</button>' +
+    '<button class="g2" data-g="2">알아</button></div>';
+
+  document.getElementById('card').onclick = function () {
+    if (!flipped) { flipped = true; render(); }
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('.grade button'), function (b) {
+    b.onclick = function () { grade(+b.dataset.g); };
+  });
+}
+
+function grade(g) {
+  var no = queue[idx];
+  tally[g]++;
+  if (g < 2 && again.indexOf(no) < 0) again.push(no);
+  state.seen[no] = { g: g, at: kstToday().toISOString().slice(0, 10) };
+  saveState(state);
+  idx++; flipped = false;
+  render();
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
+  });
+}
+
+// ── 조작 ────────────────────────────────────────────────────────────────────
+document.getElementById('tabWeek').onclick = function () {
+  scope = 'week';
+  this.setAttribute('aria-selected', 'true');
+  document.getElementById('tabAll').setAttribute('aria-selected', 'false');
+  startSession(weekNos());
+};
+document.getElementById('tabAll').onclick = function () {
+  scope = 'all';
+  this.setAttribute('aria-selected', 'true');
+  document.getElementById('tabWeek').setAttribute('aria-selected', 'false');
+  startSession(pickAll());
+};
+Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (b) {
+  b.onclick = function () {
+    dir = b.dataset.dir;
+    Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (x) {
+      x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+    });
+    try { localStorage.setItem('dbj-dir', dir); } catch (e) { }
+    startSession(scope === 'week' ? weekNos() : pickAll());
+  };
+});
+document.getElementById('reset').onclick = function (e) {
+  e.preventDefault();
+  if (!confirm('이 기기에 저장된 복습 기록을 모두 지웁니다.')) return;
+  state = { seen: {}, nos: [] };
+  saveState(state);
+  startSession(weekNos());
+};
+
+try {
+  var savedDir = localStorage.getItem('dbj-dir');
+  if (savedDir) {
+    dir = savedDir;
+    Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (x) {
+      x.setAttribute('aria-pressed', x.dataset.dir === dir ? 'true' : 'false');
+    });
+  }
+} catch (e) { }
+
+startSession(weekNos());
+</script>
+
+</html>
