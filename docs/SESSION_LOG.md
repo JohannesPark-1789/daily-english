@@ -28,6 +28,20 @@
 - **GitHub Pages 로 이전** (공개 저장소 `JohannesPark-1789/daily-english`, `main /docs`)
   - https://johannespark-1789.github.io/daily-english/ — 로그인 불필요, 주소 80자 → 62자
   - `?w=1_4_7_9_10` 파라미터 동작 확인 (쉼표는 카톡 자동 링크에서 잘릴 수 있어 밑줄 사용)
+  - 폰에서 링크 열림 확인
+- **복습 누적에 이미 학습한 문장 포함** — `skipNos`(2·3·5·6·8)는 "발송 제외"이지 "미학습"이 아니다.
+  `web.includeSkippedInReview` 로 복습 풀에만 넣는다. 누적 풀 5 → 10문장으로 확인
+- yt-dlp 2026.07.04 → 2026.08.19 업데이트 (mp423 의 8/23 403 실패 대응)
+
+### 이 세션에서 확정된 운영 상태
+
+| 항목 | 값 |
+|---|---|
+| 평일 발송 | 월~금 07:00 KST · `daily-english-7am` |
+| 주말 복습 | 토 07:00 KST · `daily-english-weekly` |
+| 카드 주소 | https://johannespark-1789.github.io/daily-english/ |
+| 발송 진행 | `nextNo: 11` (다음 011 THAT'S A BIG IF) |
+| 복습 누적 | 1~10 (발송분 5 + 이전 학습분 5) |
 
 ## 2026-08-23 (일)
 
