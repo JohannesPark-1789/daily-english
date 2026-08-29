@@ -1,0 +1,16 @@
+﻿{
+  "phraseFile": "phrases.tsv",
+  "startNo": 1,
+  "skipNos": [2, 3, 5, 6, 8],
+  "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+  "sendTime": "07:00",
+  "buttonTitle": "쇼츠 보기",
+  "onFinish": "stop",
+  "messageTemplate": [
+    "🌅 오늘의 영어 {no} / {total}",
+    "",
+    "{phrase}",
+    "",
+    "{url}"
+  ]
+}

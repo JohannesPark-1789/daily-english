@@ -1,0 +1,14 @@
+# 비밀값·토큰 — 절대 커밋 금지
+.env
+state/tokens.json
+state/progress.json
+
+# 로그
+logs/*
+!logs/.gitkeep
+state/*
+!state/.gitkeep
+
+# 잡파일
+Thumbs.db
+desktop.ini
