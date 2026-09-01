@@ -13,7 +13,9 @@ param(
     # 특정 번호를 지정해서 보낸다 (진행 상태는 건드리지 않는다).
     [int]$No = 0,
     # 발송 요일 / 중복 발송 검사를 무시한다.
-    [switch]$Force
+    [switch]$Force,
+    # 중복 확인 질문 없이 진행한다 (스크립트용).
+    [switch]$Yes
 )
 
 $ErrorActionPreference = 'Stop'
@@ -39,6 +41,19 @@ try {
     if (-not $Force -and -not $DryRun -and $No -eq 0 -and $progress.lastSentDate -eq $today) {
         Write-DeLog -Level 'WARN' -LogDir $logDir -Message ('오늘({0}) 이미 {1}번을 보냈습니다 — 건너뜀' -f $today, $progress.lastSentNo)
         exit 0
+    }
+
+    # 2-1) -Force 로 밀어붙이는 경우에도, 오늘 이미 성공했다면 한 번 물어본다.
+    #      카카오는 접수 후 전달이 십수 분 늦어지는 일이 있다 — 안 왔다고 다시 보내면 중복이 된다.
+    if ($Force -and -not $DryRun -and -not $Yes -and $progress.lastSentDate -eq $today) {
+        Write-Host ''
+        Write-Host (' 오늘({0}) 이미 {1:d3}번을 보냈고 카카오가 성공으로 응답했습니다.' -f $today, $progress.lastSentNo) -ForegroundColor Yellow
+        Write-Host ' 카톡 도착이 십수 분 늦어지는 경우가 있으니, 「나와의 채팅」을 한 번 더 확인해 보세요.' -ForegroundColor Yellow
+        $ans = Read-Host ' 그래도 다시 보낼까요? (y/N)'
+        if ($ans -notmatch '^[yY]') {
+            Write-Host ' 보내지 않았습니다.' -ForegroundColor DarkGray
+            exit 0
+        }
     }
 
     # 3) 보낼 항목 고르기 — 번호를 직접 준 경우가 아니면 제외 목록을 건너뛰며 순차 선택
