@@ -10,8 +10,11 @@
     "🌅 오늘의 영어 {no} / {total}",
     "",
     "{phrase}",
+    "→ {meaning}",
+    "💡 {hint}",
     "",
-    "{url}"
+    "▶ {url}",
+    "📖 {card}"
   ],
 
   "web": {

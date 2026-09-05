@@ -262,9 +262,16 @@ function pickAll() {
   return scored.slice(0, 20).map(function (x) { return x.no; });
 }
 
+// 아침 카톡의 "📖 설명" 링크는 ?open=1 로 온다 — 바로 뜻과 설명을 펼쳐 준다.
+var openFirst = /[?&#]open=1/.test(location.search + location.hash);
+
 function startSession(nos) {
   queue = nos.filter(function (n) { return byNo[n]; });
-  idx = 0; flipped = false; tally = { 0: 0, 1: 0, 2: 0 }; again = [];
+  idx = 0;
+  flipped = openFirst;
+  openFirst = false;          // 첫 카드에만 적용한다
+  tally = { 0: 0, 1: 0, 2: 0 };
+  again = [];
   render();
 }
 
@@ -368,7 +375,8 @@ function detailHtml(text) {
     var e = esc(l);
     return l.trim().indexOf('→') === 0 ? '<span class="arrow">' + e + '</span>' : e;
   }).join('\n').replace(/^\n+/, '');
-  return '<details class="detail"><summary>자세히</summary><div class="body">' + body + '</div></details>';
+  var open = /[?&#]open=1/.test(location.search + location.hash) ? ' open' : '';
+  return '<details class="detail"' + open + '><summary>자세히</summary><div class="body">' + body + '</div></details>';
 }
 
 // ── 조작 ────────────────────────────────────────────────────────────────────

@@ -372,18 +372,60 @@ function Save-DeProgress {
     $Progress | ConvertTo-Json | Set-Content -LiteralPath $path -Encoding utf8
 }
 
+function Get-DeNotes {
+    # import-notes.ps1 이 만든 상세 설명 (번호 → {body, hint}). 없으면 빈 표.
+    param([Parameter(Mandatory = $true)]$Config)
+
+    $map = @{}
+    $path = Join-Path $Config.Dir['data'] 'notes.json'
+    if (-not (Test-Path -LiteralPath $path)) { return $map }
+    foreach ($n in @(Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json)) {
+        if ($n.no) { $map[[int]$n.no] = $n }
+    }
+    return $map
+}
+
 function Format-DeMessage {
-    # config.messageTemplate 의 {no} {phrase} {url} {total} 을 치환한다.
+    # config.messageTemplate 의 자리표시자를 채운다.
+    #   {no} {phrase} {total} {url}(쇼츠) {meaning}(한글 뜻) {hint}(핵심 한 줄) {card}(카드 링크)
+    # 카톡 200자 제한이 있으므로, 넣을 것이 없거나 넘칠 것 같으면 줄째로 지운다.
     param(
         [Parameter(Mandatory = $true)]$Config,
         [Parameter(Mandatory = $true)]$Item,
-        [int]$Total = 0
+        [int]$Total = 0,
+        [string]$Meaning = '',
+        [string]$Hint = ''
     )
-    $text = $Config.messageTemplate -join "`n"
+    $lines = @($Config.messageTemplate)
+
+    # 값이 빈 자리표시자만 있는 줄은 통째로 뺀다 (빈 줄이 남지 않게)
+    $kept = @()
+    foreach ($l in $lines) {
+        if ($l -match '\{meaning\}' -and -not $Meaning) { continue }
+        if ($l -match '\{hint\}' -and -not $Hint) { continue }
+        $kept += $l
+    }
+
+    $card = ''
+    if ($Config.web.baseUrl) {
+        $sep = '?'
+        if ($Config.web.baseUrl.Contains('?')) { $sep = '&' }
+        $card = '{0}{1}w={2}&open=1' -f $Config.web.baseUrl, $sep, $Item.No
+    }
+
+    $text = $kept -join "`n"
     $text = $text.Replace('{no}', ('{0:d3}' -f $Item.No))
     $text = $text.Replace('{phrase}', $Item.Phrase)
-    $text = $text.Replace('{url}', $Item.Url)
     $text = $text.Replace('{total}', [string]$Total)
+    $text = $text.Replace('{meaning}', $Meaning)
+    $text = $text.Replace('{hint}', $Hint)
+    $text = $text.Replace('{card}', $card)
+    $text = $text.Replace('{url}', $Item.Url)
+
+    # 그래도 200자를 넘으면 핵심 줄을 먼저 버린다 (링크가 잘리면 안 되므로)
+    if ($text.Length -gt 200 -and $Hint) {
+        return (Format-DeMessage -Config $Config -Item $Item -Total $Total -Meaning $Meaning -Hint '')
+    }
     return $text
 }
 
@@ -399,4 +441,4 @@ Export-ModuleMember -Function `
     Get-DeTokens, Save-DeTokens, New-DeTokenFromCode, Get-DeValidAccessToken, `
     Get-DeScopes, Test-DeMessageScope, `
     Send-DeKakaoMemo, Get-DePhrases, Get-DeProgress, Save-DeProgress, Get-DeNextItem, `
-    Format-DeMessage, Test-DeSendDay
+    Get-DeNotes, Format-DeMessage, Test-DeSendDay

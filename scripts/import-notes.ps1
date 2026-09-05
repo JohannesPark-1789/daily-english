@@ -158,7 +158,37 @@ foreach ($n in ($items.Keys | Sort-Object)) {
     $suggested = ''
     if ($arrows.Count -gt 0) { $suggested = ($arrows[0] -replace '[.]$', '').Trim() }
 
-    $notes += [pscustomobject]@{ no = $n; body = $body }
+    # 아침 카톡에 한 줄로 넣을 요약을 찾는다 (카톡은 200자 제한이라 전문은 못 넣는다).
+    #   1) "핵심:" 으로 시작하는 줄   2) "핵심" 이 들어간 마지막 줄   3) 마지막 줄
+    $hint = ''
+    $bodyLines = @($body -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    $selfKey = Get-NormalizedPhrase $byNo[$n].Phrase
+
+    # 1) 명시적 마커 — "핵심: ..." (프롬프트가 이 형식을 요구한다)
+    foreach ($l in $bodyLines) {
+        if ($l -match '^핵심\s*[:：]\s*(.+)$') { $hint = $Matches[1].Trim() }
+    }
+    # 2) "…핵심을 한 문장으로 기억하면:" 같은 리드인 다음의 실제 문장
+    if (-not $hint) {
+        for ($k = 0; $k -lt $bodyLines.Count; $k++) {
+            if ($bodyLines[$k] -notlike '*핵심*') { continue }
+            if ($bodyLines[$k] -notmatch '[:：]\s*$') { continue }
+            for ($m = $k + 1; $m -lt $bodyLines.Count; $m++) {
+                $cand = $bodyLines[$m]
+                if ((Get-NormalizedPhrase $cand) -eq $selfKey) { continue }   # 영어 원문 줄은 건너뛴다
+                $hint = $cand
+                break
+            }
+        }
+    }
+    # 3) 그래도 없으면 마지막 줄
+    if (-not $hint -and $bodyLines.Count -gt 0) { $hint = $bodyLines[$bodyLines.Count - 1] }
+
+    $hint = ($hint -replace '^[=＝]\s*', '').Trim()
+    $hint = ($hint -replace '^핵심은 한 문장으로\s*[:：]?\s*', '').Trim()
+    if ($hint.Length -gt 60) { $hint = '' }   # 너무 길면 아침 메시지에 넣지 않는다
+
+    $notes += [pscustomobject]@{ no = $n; body = $body; hint = $hint }
 
     if ($suggested -and $ko[$n] -and $suggested -ne $ko[$n]) {
         $meaningChanges += [pscustomobject]@{ No = $n; Old = $ko[$n]; New = $suggested }

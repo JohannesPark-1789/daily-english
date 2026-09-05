@@ -76,7 +76,25 @@ try {
         }
     }
 
-    $text = Format-DeMessage -Config $cfg -Item $item -Total $phrases.Count
+    # 뜻과 상세 설명의 핵심 한 줄을 함께 싣는다 (있는 것만)
+    $notes = Get-DeNotes -Config $cfg
+    $meaning = ''
+    $hint = ''
+    $koMap = @{}
+    $koPath = Join-Path $cfg.Dir['data'] 'translations.tsv'
+    if (Test-Path -LiteralPath $koPath) {
+        $firstLine = $true
+        foreach ($line in (Get-Content -LiteralPath $koPath -Encoding UTF8)) {
+            if (-not $line.Trim()) { continue }
+            if ($firstLine) { $firstLine = $false; if ($line -like 'no*ko*') { continue } }
+            $cols = $line -split "`t"
+            if ($cols.Count -ge 2) { $koMap[[int]$cols[0]] = $cols[1].Trim() }
+        }
+    }
+    if ($koMap[$item.No]) { $meaning = $koMap[$item.No] }
+    if ($notes[$item.No]) { $hint = [string]$notes[$item.No].hint }
+
+    $text = Format-DeMessage -Config $cfg -Item $item -Total $phrases.Count -Meaning $meaning -Hint $hint
 
     if ($DryRun) {
         Write-Host ''
