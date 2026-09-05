@@ -41,6 +41,22 @@ else {
     Write-DeLog -Level 'WARN' -LogDir $logDir -Message "번역 파일이 없습니다: $koPath (카드 뒷면이 비게 됩니다)"
 }
 
+# 한글 앞면이 겹치면 한글→영어 모드에서 답이 하나로 정해지지 않는다.
+$dupKo = @{}
+foreach ($p in $phrases) {
+    $k = [string]$ko[$p.No]
+    if (-not $k) { continue }
+    if (-not $dupKo.ContainsKey($k)) { $dupKo[$k] = @() }
+    $dupKo[$k] += $p.No
+}
+$collisions = @($dupKo.Keys | Where-Object { $dupKo[$_].Count -gt 1 })
+if ($collisions.Count -gt 0) {
+    Write-DeLog -Level 'WARN' -LogDir $logDir -Message ('한글 뜻이 겹치는 카드 {0}쌍 — 한글→영어에서 답이 갈립니다' -f $collisions.Count)
+    foreach ($k in $collisions) {
+        Write-DeLog -Level 'WARN' -LogDir $logDir -Message ('  "{0}" ← {1}' -f $k, (($dupKo[$k] | ForEach-Object { '#' + $_ }) -join ', '))
+    }
+}
+
 $missing = @($phrases | Where-Object { -not $ko[$_.No] })
 if ($missing.Count -gt 0) {
     Write-DeLog -Level 'WARN' -LogDir $logDir -Message ('번역이 없는 문장 {0}개 — 예: {1}' -f `
