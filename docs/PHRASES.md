@@ -1,9 +1,9 @@
 ﻿# 듣보잡 영어 — 전체 문장 목록
 
-> 총 235개 · 2026-09-06 07:19 기준 (KST) · 이 파일은 `build-web.ps1` 이 만든다. 고칠 때는 `data\*.tsv` 를 고친다.
+> 총 235개 · 2026-09-06 07:35 기준 (KST) · 이 파일은 `build-web.ps1` 이 만든다. 고칠 때는 `data\*.tsv` 를 고친다.
 
 - **보냄** 10개 · **이전 학습** 5개 · **예정** 220개
-- 번역 **확인필요** 4개 · **검수완료** 204개
+- 번역 **확인필요** 0개 · **검수완료** 208개
 - 상세 설명 있는 항목 **235개**
 - 상태: ✅ 보냄 · 🔁 이전에 학습(발송 제외) · ⬜ 예정 / 검수: ⚠️ 확인필요 · ✔ 검수완료 / 📖 상세 설명 있음
 
@@ -72,7 +72,7 @@
 | 061 | WHERE DO YOU GET OFF? | 무슨 자격으로 그런 소릴 해? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/PNR6dys6cl4) |
 | 062 | THAT'S EASIER SAID THAN DONE | 말이 쉽지 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/cN_0rrcqUmI) |
 | 063 | THAT'S A NEW LOW | 이젠 갈 데까지 갔네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/73Pl9FmqW-Q) |
-| 064 | I'M ONTO SOMETHING | 뭔가 실마리를 잡은 것 같아 | ⬜ | ⚠️ | 📖 | [▶](https://www.youtube.com/shorts/OkeVp_4dh_M) |
+| 064 | I'M ONTO SOMETHING | 뭔가 실마리를 잡은 것 같아 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/OkeVp_4dh_M) |
 | 065 | LET'S KEEP IT SIMPLE | 간단하게 가자 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/JwSnUGGQOwI) |
 | 066 | I'M NOT BUYING IT | 난 그 말 못 믿겠어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/NYo8f38Hf0k) |
 | 067 | YOU'VE LOST ME | 무슨 말인지 놓쳤어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/rD6o_LyGB-U) |
@@ -98,7 +98,7 @@
 | 087 | YOU HAVE NO IDEA WHAT YOU'RE UP AGAINST | 네가 뭘 상대하는지 전혀 모르고 있네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/EDT_-Akj1CE) |
 | 088 | THAT CHECKS OUT | 확인해 보니 맞네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/1_lLhh9FgV4) |
 | 089 | WHAT'S YOUR TAKE? | 넌 이걸 어떻게 봐? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/L1NdI_9A4c0) |
-| 090 | IT KIND OF IS | 좀 그렇긴 해 | ⬜ | ⚠️ | 📖 | [▶](https://www.youtube.com/shorts/BFD-7LMGrV0) |
+| 090 | IT KIND OF IS | 어느 정도는 맞긴 해 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/BFD-7LMGrV0) |
 | 091 | SAME OLD SAME OLD | 늘 똑같지 뭐 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/wqKO8F9lrl0) |
 | 092 | THIS HAS NOTHING TO DO WITH YOU | 이건 너랑 상관없는 일이야 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/_HSjgEh0Wb4) |
 | 093 | I WAS JUST ABOUT TO | 안 그래도 막 하려던 참이었어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/-sKuySEIdgc) |
@@ -152,7 +152,7 @@
 | 141 | IS THIS WHAT YOU WANT? | 네가 원하는 게 이거야? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/Rz3ocsSp4GU) |
 | 142 | ARE YOU GETTING COLD FEET? | 막상 하려니까 겁나는 거야? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/jty5-4cgDAM) |
 | 143 | HOW MUCH DO I OWE YOU? | 내가 얼마 주면 돼? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/kGjfYxKQUzU) |
-| 144 | THAT FIGURES | 그럴 줄 알았어 | ⬜ | ⚠️ | 📖 | [▶](https://www.youtube.com/shorts/oi1gnczaYA8) |
+| 144 | THAT FIGURES | 그럴 만도 하네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/oi1gnczaYA8) |
 | 145 | IT'S THE THOUGHT THAT COUNTS | 중요한 건 그 마음이지 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/UUC4IV16k8Q) |
 | 146 | COULD YOU KEEP IT DOWN? | 좀 조용히 해 줄래? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/nlLaZO4WfdM) |
 | 147 | WHO DO YOU THINK YOU ARE? | 네가 뭐라도 되는 줄 알아? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/UL0BJa-ZgW0) |
@@ -170,7 +170,7 @@
 | 159 | CAN I HAVE A WORD WITH YOU? | 잠깐 얘기 좀 할 수 있어? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/7GW9wpnhUt4) |
 | 160 | IT'S A DONE DEAL | 그건 이미 확정됐어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/XjiJ6z04i4I) |
 | 161 | LET'S PLAY IT BY EAR | 상황 봐 가면서 하자 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/AJARr4Etxi8) |
-| 162 | YOU'VE GOT SOME NERVE | 너 참 뻔뻔하다 | ⬜ | ⚠️ | 📖 | [▶](https://www.youtube.com/shorts/OvjwC3l_340) |
+| 162 | YOU'VE GOT SOME NERVE | 너 참 뻔뻔하다 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/OvjwC3l_340) |
 | 163 | WHAT'S GOTTEN INTO YOU? | 너 갑자기 왜 그래? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/Ty40Uz-fL-0) |
 | 164 | WHAT DO YOU DO FOR A LIVING? | 무슨 일 해서 먹고살아? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/5GF9oZuK1QI) |
 | 165 | LET'S GIVE IT A SHOT | 일단 한번 해 보자 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/uKitPcHOGbI) |
