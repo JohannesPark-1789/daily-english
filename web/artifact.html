@@ -109,10 +109,41 @@
   .detail[open] summary { border-bottom: 1px solid var(--line); color: var(--ink); }
   .detail[open] summary::after { content: '▴'; }
   .detail .body {
-    padding: 16px 16px 20px; font-size: 14px; line-height: 1.75;
-    white-space: pre-wrap; word-break: keep-all; text-align: left; color: var(--ink);
+    padding: 18px 16px 22px; font-size: 15px; line-height: 1.8;
+    word-break: keep-all; text-align: left; color: var(--ink);
   }
-  .detail .body .arrow { color: var(--accent-ink); font-weight: 600; }
+  .detail .body > * + * { margin-top: 14px; }
+  .detail .body p { margin: 0; }
+
+  /* 번호 붙은 절 제목 — 자막 모티프에 맞춰 노란 세로선 */
+  .detail h4 {
+    margin: 0; font-size: 13px; font-weight: 700; letter-spacing: -.01em;
+    padding-left: 10px; border-left: 3px solid var(--accent); color: var(--ink);
+  }
+  .detail .body > h4 + * { margin-top: 8px; }
+  .detail .body > * + h4 { margin-top: 22px; }
+
+  /* 뜻·풀이 화살표 줄 */
+  .detail .arrow { color: var(--accent-ink); font-weight: 600; margin: 0; }
+  .detail .arrows { display: flex; flex-direction: column; gap: 4px; }
+
+  /* 영어 예시와 그 해석을 한 덩어리로 */
+  .detail .ex {
+    padding: 12px 14px; background: var(--bg); border-radius: 6px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .detail .ex .en { font-weight: 600; }
+  .detail .ex .ko { color: var(--muted); font-size: 14px; }
+
+  /* 핵심 한 줄 — 아침 카톡에 나가는 그 문장 */
+  .detail .key {
+    padding: 14px 16px; border-radius: 6px; background: var(--plate);
+    color: var(--on-plate); font-weight: 600; font-size: 15px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .detail .key { border: 1px solid var(--accent); color: var(--accent); }
+  }
+  :root[data-theme="dark"] .detail .key { border: 1px solid var(--accent); color: var(--accent); }
 
   .grade { display: none; gap: 8px; margin-top: 12px; }
   .grade.on { display: flex; }
@@ -365,12 +396,86 @@ function detailHtml(text) {
   var lines = String(text).split('\n');
   // 첫 줄은 영어 문장 자체라 카드 앞면과 겹친다 — 뺀다
   if (lines.length && lines[0].trim()) { lines = lines.slice(1); }
-  var body = lines.map(function (l) {
-    var e = esc(l);
-    return l.trim().indexOf('→') === 0 ? '<span class="arrow">' + e + '</span>' : e;
-  }).join('\n').replace(/^\n+/, '');
+  // 빈 줄 기준으로 덩어리를 나눈다
+  var blocks = [], cur = [];
+  lines.forEach(function (l) {
+    if (l.trim()) { cur.push(l.trim()); }
+    else if (cur.length) { blocks.push(cur); cur = []; }
+  });
+  if (cur.length) { blocks.push(cur); }
+
+  // "예를 들어," 처럼 다음 문장으로 이어지는 짧은 도입부는 뒤 덩어리에 붙인다
+  var merged = [];
+  blocks.forEach(function (b) {
+    var prev = merged[merged.length - 1];
+    if (prev && prev.length === 1 && prev[0].length < 24 && /[,，]$/.test(prev[0]) &&
+        !isEnglishLine(prev[0]) && !isEnglishLine(b[0])) {
+      prev.push.apply(prev, b);
+      return;
+    }
+    merged.push(b.slice());
+  });
+  blocks = merged;
+
+  var html = '';
+  blocks.forEach(function (b) {
+    // 핵심 한 줄 — 아침 카톡에 나가는 그 문장
+    if (b.length === 1 && /^핵심\s*[:：]/.test(b[0])) {
+      html += '<p class="key">' + esc(b[0].replace(/^핵심\s*[:：]\s*/, '')) + '</p>';
+      return;
+    }
+    // 화살표 줄만 모인 덩어리
+    if (b.every(function (l) { return l.indexOf('→') === 0; })) {
+      html += '<div class="arrows">' + b.map(function (l) {
+        return '<p class="arrow">' + esc(l) + '</p>';
+      }).join('') + '</div>';
+      return;
+    }
+    // 번호 붙은 절 제목
+    if (/^\d+[.)]\s+/.test(b[0])) {
+      html += '<h4>' + esc(b[0]) + '</h4>';
+      b = b.slice(1);
+      if (!b.length) { return; }
+    }
+    // 영어 문장만 홀로 있는 덩어리 (You can count on me. 같은 인용)
+    if (b.length === 1 && isEnglishLine(b[0])) {
+      html += '<div class="ex"><span class="en">' + esc(b[0]) + '</span></div>';
+      return;
+    }
+    // 영어 예시 + 해석이 번갈아 오는 덩어리 (대화 예시)
+    if (b.length >= 2 && isEnglishLine(b[0]) && !isEnglishLine(b[1])) {
+      for (var i = 0; i + 1 < b.length; i += 2) {
+        html += '<div class="ex"><span class="en">' + esc(b[i]) + '</span>' +
+                '<span class="ko">' + esc(b[i + 1]) + '</span></div>';
+      }
+      if (b.length % 2) { html += '<p>' + esc(b[b.length - 1]) + '</p>'; }
+      return;
+    }
+    // 그 밖에는 문단으로 다시 흘린다 (원문 줄바꿈은 채팅창 폭 기준이라 버린다)
+    var para = [];
+    b.forEach(function (l) {
+      if (l.indexOf('→') === 0) {
+        if (para.length) { html += '<p>' + esc(para.join(' ')) + '</p>'; para = []; }
+        html += '<p class="arrow">' + esc(l) + '</p>';
+      }
+      else if (isEnglishLine(l) && b.length > 1) {
+        if (para.length) { html += '<p>' + esc(para.join(' ')) + '</p>'; para = []; }
+        html += '<div class="ex"><span class="en">' + esc(l) + '</span></div>';
+      }
+      else { para.push(l); }
+    });
+    if (para.length) { html += '<p>' + esc(para.join(' ')) + '</p>'; }
+  });
+
   var open = /[?&#]open=1/.test(location.search + location.hash) ? ' open' : '';
-  return '<details class="detail"' + open + '><summary>자세히</summary><div class="body">' + body + '</div></details>';
+  return '<details class="detail"' + open + '><summary>자세히</summary><div class="body">' + html + '</div></details>';
+}
+
+// 한글보다 영문이 뚜렷이 많은 줄이면 예시 문장으로 본다
+function isEnglishLine(s) {
+  var latin = (s.match(/[A-Za-z]/g) || []).length;
+  var hangul = (s.match(/[가-힣]/g) || []).length;
+  return latin > 0 && latin >= hangul * 2;
 }
 
 // ── 조작 ────────────────────────────────────────────────────────────────────
