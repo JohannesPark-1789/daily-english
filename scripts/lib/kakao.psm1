@@ -379,7 +379,10 @@ function Get-DeNotes {
     $map = @{}
     $path = Join-Path $Config.Dir['data'] 'notes.json'
     if (-not (Test-Path -LiteralPath $path)) { return $map }
-    foreach ($n in @(Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json)) {
+    # ConvertFrom-Json 은 배열을 통째로 하나의 객체로 내보낸다 — 변수에 먼저 받아야
+    # @() 가 항목 배열이 된다. 파이프에서 바로 감싸면 1개짜리가 된다. (PS 5.1)
+    $parsed = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json
+    foreach ($n in @($parsed)) {
         if ($n.no) { $map[[int]$n.no] = $n }
     }
     return $map

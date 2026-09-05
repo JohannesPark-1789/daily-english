@@ -1,44 +1,44 @@
 ﻿# 듣보잡 영어 — 전체 문장 목록
 
-> 총 235개 · 2026-09-05 23:33 기준 (KST) · 이 파일은 `build-web.ps1` 이 만든다. 고칠 때는 `data\*.tsv` 를 고친다.
+> 총 235개 · 2026-09-05 23:46 기준 (KST) · 이 파일은 `build-web.ps1` 이 만든다. 고칠 때는 `data\*.tsv` 를 고친다.
 
 - **보냄** 10개 · **이전 학습** 5개 · **예정** 220개
-- 번역 **확인필요** 51개 · **검수완료** 0개
-- 상세 설명 있는 항목 **1개**
+- 번역 **확인필요** 46개 · **검수완료** 25개
+- 상세 설명 있는 항목 **30개**
 - 상태: ✅ 보냄 · 🔁 이전에 학습(발송 제외) · ⬜ 예정 / 검수: ⚠️ 확인필요 · ✔ 검수완료 / 📖 상세 설명 있음
 
 | # | 표현 | 뜻 | 상태 | 검수 | 상세 | 쇼츠 |
 |---:|---|---|:--:|:--:|:--:|:--:|
-| 001 | I WOULDN'T EVEN KNOW WHERE TO START | 어디서부터 시작해야 할지도 모르겠어 | ✅ |  |  | [▶](https://www.youtube.com/shorts/xOGL7_knAyg) |
-| 002 | YOUR GUESS IS AS GOOD AS MINE | 나도 너만큼이나 몰라 | 🔁 |  |  | [▶](https://www.youtube.com/shorts/B4j3i5W4lfc) |
-| 003 | WORKS LIKE A CHARM | 기가 막히게 잘 되네 | 🔁 |  |  | [▶](https://www.youtube.com/shorts/xNx0VsGPYlI) |
-| 004 | THAT'S NOT A THING | 그런 건 없어 | ✅ |  |  | [▶](https://www.youtube.com/shorts/tUAHzvO7nxc) |
-| 005 | I'M WITH YOU SO FAR | 여기까진 이해했어 | 🔁 |  |  | [▶](https://www.youtube.com/shorts/WtYJH0N0BNo) |
-| 006 | THAT DOES IT | 더는 못 참아 | 🔁 |  |  | [▶](https://www.youtube.com/shorts/madiKAnQslA) |
-| 007 | IS THAT RIGHT? | 그래? 정말이야? | ✅ |  |  | [▶](https://www.youtube.com/shorts/m4xqO3oxJQI) |
-| 008 | COMES WITH THE TERRITORY | 그 일 하면 당연히 따라오는 거야 | 🔁 |  |  | [▶](https://www.youtube.com/shorts/vDjn7uwvgEQ) |
-| 009 | WOULDN'T THAT BE SOMETHING? | 그러면 정말 대단하지 않겠어? | ✅ |  |  | [▶](https://www.youtube.com/shorts/_ONdvsvycik) |
-| 010 | WHO AM I KIDDING? | 내가 누굴 속이겠어 (솔직히 아니잖아) | ✅ |  |  | [▶](https://www.youtube.com/shorts/GsrM81O0x6I) |
-| 011 | THAT'S A BIG IF | 그게 될지가 문제지 | ✅ |  |  | [▶](https://www.youtube.com/shorts/gtCUMeUjWW0) |
-| 012 | ONE LESS THING TO WORRY ABOUT | 걱정거리 하나 줄었네 | ✅ |  |  | [▶](https://www.youtube.com/shorts/zb2i_BMD6Jg) |
-| 013 | NOT BY A LONG SHOT | 어림도 없어 | ✅ |  |  | [▶](https://www.youtube.com/shorts/X70Pw7FUwl8) |
-| 014 | DON'T HOLD THAT AGAINST ME | 그걸로 나 미워하지 마 | ✅ |  |  | [▶](https://www.youtube.com/shorts/p8amDqyC7WI) |
-| 015 | I WOULDN'T COUNT ON IT | 기대 안 하는 게 좋아 | ✅ |  | 📖 | [▶](https://www.youtube.com/shorts/SR-Dhiu2tnY) |
-| 016 | I REST MY CASE | 내 말이 그 말이야 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/VOF6ntV8oXc) |
-| 017 | GET A LOAD OF THIS | 이것 좀 봐 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/vx1lP2q2JW0) |
-| 018 | I'LL GRANT YOU THAT | 그건 인정할게 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/41xouw08M9s) |
-| 019 | COULD'VE FOOLED ME | 전혀 그렇게 안 보이는데 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/AKse2KXC5m8) |
-| 020 | YOU TOOK THE WORDS RIGHT OUT OF MY MOUTH | 내가 하려던 말이야 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/wAt3gf1bj2M) |
-| 021 | YOU'RE ON THIN ICE | 너 지금 아슬아슬해 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/LnK8OwfQYS8) |
-| 022 | DON'T SELL YOURSELF SHORT | 자신을 과소평가하지 마 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/js0l3I-2GBs) |
-| 023 | HOW'S THAT WORKING OUT FOR YOU? | 그래서 그게 잘 되고 있어? | ⬜ |  |  | [▶](https://www.youtube.com/shorts/GBdBEaIiouY) |
-| 024 | AIN'T THAT THE TRUTH? | 그러게 말이야 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/jk5R3AT_PTQ) |
-| 025 | I HEAR THAT | 무슨 말인지 알아, 공감해 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/liKY3lOSVYo) |
-| 026 | THAT'S NOT HOW THIS WORKS | 그런 식으로 되는 게 아니야 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/xw6K6sjwVYQ) |
-| 027 | I WALKED RIGHT INTO THAT ONE | 내가 자초했네 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/IFtcsvl2Yh8) |
-| 028 | I'LL TAKE THAT AS A YES | 그럼 그렇다는 걸로 알게 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/2vMWnkz8ufU) |
-| 029 | WHAT ELSE IS NEW? | 뭐 새삼스러운 일도 아니지 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/XwdB__DA87M) |
-| 030 | THAT'S A HARD PASS | 그건 정중히 사양할게 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/aJsQhTUHamo) |
+| 001 | I WOULDN'T EVEN KNOW WHERE TO START | 어디서부터 시작해야 할지도 모르겠어 | ✅ |  | 📖 | [▶](https://www.youtube.com/shorts/xOGL7_knAyg) |
+| 002 | YOUR GUESS IS AS GOOD AS MINE | 나도 너만큼 몰라 | 🔁 | ✔ | 📖 | [▶](https://www.youtube.com/shorts/B4j3i5W4lfc) |
+| 003 | WORKS LIKE A CHARM | 효과가 아주 좋아 | 🔁 | ✔ | 📖 | [▶](https://www.youtube.com/shorts/xNx0VsGPYlI) |
+| 004 | THAT'S NOT A THING | 그런 건 없어 | ✅ |  | 📖 | [▶](https://www.youtube.com/shorts/tUAHzvO7nxc) |
+| 005 | I'M WITH YOU SO FAR | 여기까지는 이해했어 | 🔁 | ✔ | 📖 | [▶](https://www.youtube.com/shorts/WtYJH0N0BNo) |
+| 006 | THAT DOES IT | 이제 더는 못 참아 | 🔁 | ✔ | 📖 | [▶](https://www.youtube.com/shorts/madiKAnQslA) |
+| 007 | IS THAT RIGHT? | 아, 그래? | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/m4xqO3oxJQI) |
+| 008 | COMES WITH THE TERRITORY | 그 일을 하면 감수해야 하는 거야 | 🔁 | ✔ | 📖 | [▶](https://www.youtube.com/shorts/vDjn7uwvgEQ) |
+| 009 | WOULDN'T THAT BE SOMETHING? | 그렇게 되면 정말 대단하겠다 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/_ONdvsvycik) |
+| 010 | WHO AM I KIDDING? | 내가 누굴 속이겠어 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/GsrM81O0x6I) |
+| 011 | THAT'S A BIG IF | 그 ‘만약’부터가 불확실하잖아 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/gtCUMeUjWW0) |
+| 012 | ONE LESS THING TO WORRY ABOUT | 걱정거리 하나 줄었네 | ✅ |  | 📖 | [▶](https://www.youtube.com/shorts/zb2i_BMD6Jg) |
+| 013 | NOT BY A LONG SHOT | 어림도 없어 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/X70Pw7FUwl8) |
+| 014 | DON'T HOLD THAT AGAINST ME | 그걸로 나 나쁘게 보진 마 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/p8amDqyC7WI) |
+| 015 | I WOULDN'T COUNT ON IT | 난 그걸 너무 기대하진 않겠어 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/SR-Dhiu2tnY) |
+| 016 | I REST MY CASE | 이걸로 내 말이 맞다는 게 증명됐네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/VOF6ntV8oXc) |
+| 017 | GET A LOAD OF THIS | 이것 좀 봐 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/vx1lP2q2JW0) |
+| 018 | I'LL GRANT YOU THAT | 그 점은 인정할게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/41xouw08M9s) |
+| 019 | COULD'VE FOOLED ME | 난 전혀 그렇게 안 보이던데 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/AKse2KXC5m8) |
+| 020 | YOU TOOK THE WORDS RIGHT OUT OF MY MOUTH | 딱 내가 하려던 말이야 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/wAt3gf1bj2M) |
+| 021 | YOU'RE ON THIN ICE | 너 지금 아슬아슬해 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/LnK8OwfQYS8) |
+| 022 | DON'T SELL YOURSELF SHORT | 너 자신을 너무 과소평가하지 마 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/js0l3I-2GBs) |
+| 023 | HOW'S THAT WORKING OUT FOR YOU? | 그렇게 해 보니까 어때? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/GBdBEaIiouY) |
+| 024 | AIN'T THAT THE TRUTH? | 진짜 그 말이 맞아 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/jk5R3AT_PTQ) |
+| 025 | I HEAR THAT | 그 말 완전 공감돼 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/liKY3lOSVYo) |
+| 026 | THAT'S NOT HOW THIS WORKS | 이건 그런 식으로 하는 게 아니야 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/xw6K6sjwVYQ) |
+| 027 | I WALKED RIGHT INTO THAT ONE | 내가 딱 걸려들었네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/IFtcsvl2Yh8) |
+| 028 | I'LL TAKE THAT AS A YES | 그럼 동의한 걸로 알게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/2vMWnkz8ufU) |
+| 029 | WHAT ELSE IS NEW? | 뭐, 늘 그렇지 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/XwdB__DA87M) |
+| 030 | THAT'S A HARD PASS | 그건 절대 사양할게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/aJsQhTUHamo) |
 | 031 | I CAN'T QUITE PLACE IT | 뭔지 딱 집어 말을 못 하겠어 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/2lmbXciB0V8) |
 | 032 | I'M GONNA WING IT | 즉흥으로 해볼래 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/l2_ZqRJ8rZE) |
 | 033 | I'M NOT CUT OUT FOR THIS | 난 이런 거에 안 맞아 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/ffdYsDjjlxE) |

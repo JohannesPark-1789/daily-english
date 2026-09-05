@@ -51,7 +51,10 @@ if ($missing.Count -gt 0) {
 $notes = @{}
 $notesPath = Join-Path $cfg.Dir['data'] 'notes.json'
 if (Test-Path -LiteralPath $notesPath) {
-    foreach ($n in @(Get-Content -LiteralPath $notesPath -Raw -Encoding UTF8 | ConvertFrom-Json)) {
+    # ConvertFrom-Json 은 배열을 통째로 하나의 객체로 내보낸다.
+    # 파이프에서 바로 @() 로 감싸면 1개짜리 배열이 되어 버리므로 변수에 먼저 받는다. (PS 5.1)
+    $parsed = Get-Content -LiteralPath $notesPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    foreach ($n in @($parsed)) {
         if ($n.no) { $notes[[int]$n.no] = [string]$n.body }
     }
 }

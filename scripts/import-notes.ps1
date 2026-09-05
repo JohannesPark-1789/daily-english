@@ -164,9 +164,9 @@ foreach ($n in ($items.Keys | Sort-Object)) {
     $bodyLines = @($body -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
     $selfKey = Get-NormalizedPhrase $byNo[$n].Phrase
 
-    # 1) 명시적 마커 — "핵심: ..." (프롬프트가 이 형식을 요구한다)
+    # 1) 명시적 마커 — "핵심: ..." / "기억 고리: ..." (프롬프트 판마다 이름이 다르다)
     foreach ($l in $bodyLines) {
-        if ($l -match '^핵심\s*[:：]\s*(.+)$') { $hint = $Matches[1].Trim() }
+        if ($l -match '^(핵심|기억 고리|한 줄 요약|요약)\s*[:：]\s*(.+)$') { $hint = $Matches[2].Trim() }
     }
     # 2) "…핵심을 한 문장으로 기억하면:" 같은 리드인 다음의 실제 문장
     if (-not $hint) {
@@ -185,7 +185,8 @@ foreach ($n in ($items.Keys | Sort-Object)) {
     if (-not $hint -and $bodyLines.Count -gt 0) { $hint = $bodyLines[$bodyLines.Count - 1] }
 
     $hint = ($hint -replace '^[=＝]\s*', '').Trim()
-    $hint = ($hint -replace '^핵심은 한 문장으로\s*[:：]?\s*', '').Trim()
+    # 설명자가 붙이는 흔한 접두어를 떼어 낸다 (프롬프트 판마다 다르게 나온다)
+    $hint = ($hint -replace '^(핵심은 한 문장으로|한 문장으로 기억하면|기억 고리|한 줄 요약|요약|정리)\s*[:：]?\s*', '').Trim()
     if ($hint.Length -gt 60) { $hint = '' }   # 너무 길면 아침 메시지에 넣지 않는다
 
     $notes += [pscustomobject]@{ no = $n; body = $body; hint = $hint }
