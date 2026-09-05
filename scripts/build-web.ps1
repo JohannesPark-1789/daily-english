@@ -47,14 +47,25 @@ if ($missing.Count -gt 0) {
             $missing.Count, (($missing | Select-Object -First 3 | ForEach-Object { '#' + $_.No }) -join ', '))
 }
 
+# 상세 설명 (import-notes.ps1 이 만든 것). 있는 것만 카드에 실린다.
+$notes = @{}
+$notesPath = Join-Path $cfg.Dir['data'] 'notes.json'
+if (Test-Path -LiteralPath $notesPath) {
+    foreach ($n in @(Get-Content -LiteralPath $notesPath -Raw -Encoding UTF8 | ConvertFrom-Json)) {
+        if ($n.no) { $notes[[int]$n.no] = [string]$n.body }
+    }
+}
+
 $cards = @()
 foreach ($p in $phrases) {
-    $cards += [pscustomobject]@{
+    $card = [pscustomobject]@{
         no = $p.No
         en = $p.Phrase
         ko = [string]$ko[$p.No]
         url = $p.Url
     }
+    if ($notes[$p.No]) { $card | Add-Member -NotePropertyName 'note' -NotePropertyValue $notes[$p.No] }
+    $cards += $card
 }
 
 # skipNos 는 "발송에서 제외" 이지 "학습하지 않음" 이 아니다.
@@ -123,10 +134,11 @@ $md.Add(('- **보냄** {0}개 · **이전 학습** {1}개 · **예정** {2}개' 
 $md.Add(('- 번역 **확인필요** {0}개 · **검수완료** {1}개' -f `
         (@($conf.Values | Where-Object { $_ -eq '확인필요' }).Count),
         (@($conf.Values | Where-Object { $_ -eq '검수완료' }).Count)))
-$md.Add('- 상태: ✅ 보냄 · 🔁 이전에 학습(발송 제외) · ⬜ 예정 / 검수: ⚠️ 확인필요 · ✔ 검수완료')
+$md.Add(('- 상세 설명 있는 항목 **{0}개**' -f $notes.Count))
+$md.Add('- 상태: ✅ 보냄 · 🔁 이전에 학습(발송 제외) · ⬜ 예정 / 검수: ⚠️ 확인필요 · ✔ 검수완료 / 📖 상세 설명 있음')
 $md.Add('')
-$md.Add('| # | 표현 | 뜻 | 상태 | 검수 | 쇼츠 |')
-$md.Add('|---:|---|---|:--:|:--:|:--:|')
+$md.Add('| # | 표현 | 뜻 | 상태 | 검수 | 상세 | 쇼츠 |')
+$md.Add('|---:|---|---|:--:|:--:|:--:|:--:|')
 
 foreach ($c in $cards) {
     $st = '⬜'
@@ -140,7 +152,9 @@ foreach ($c in $cards) {
     # 표를 깨뜨리지 않도록 파이프만 막는다
     $en = $c.en -replace '\|', '\|'
     $ko = $c.ko -replace '\|', '\|'
-    $md.Add(('| {0:d3} | {1} | {2} | {3} | {4} | [▶]({5}) |' -f $c.no, $en, $ko, $st, $rv, $c.url))
+    $dt = ''
+    if ($notes[$c.no]) { $dt = '📖' }
+    $md.Add(('| {0:d3} | {1} | {2} | {3} | {4} | {5} | [▶]({6}) |' -f $c.no, $en, $ko, $st, $rv, $dt, $c.url))
 }
 
 $mdPath = Join-Path $root 'docs\PHRASES.md'

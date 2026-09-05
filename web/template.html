@@ -93,6 +93,26 @@
   :root[data-theme="dark"] .plate { border-top: 1px solid var(--line); }
   :root[data-theme="dark"] .plate .txt { color: var(--accent); }
   .plate a { display: inline-block; margin-top: 14px; font-size: 12px; color: var(--muted); text-decoration: none; border-bottom: 1px solid currentColor; }
+  .plate .links { display: flex; gap: 16px; justify-content: center; }
+
+  /* 상세 설명 — 헷갈릴 때만 펼친다 */
+  .detail {
+    margin-top: 12px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 6px; overflow: hidden;
+  }
+  .detail summary {
+    padding: 12px 14px; font-size: 13px; font-weight: 600; color: var(--muted);
+    cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;
+  }
+  .detail summary::-webkit-details-marker { display: none; }
+  .detail summary::after { content: '▾'; color: var(--muted); }
+  .detail[open] summary { border-bottom: 1px solid var(--line); color: var(--ink); }
+  .detail[open] summary::after { content: '▴'; }
+  .detail .body {
+    padding: 16px 16px 20px; font-size: 14px; line-height: 1.75;
+    white-space: pre-wrap; word-break: keep-all; text-align: left; color: var(--ink);
+  }
+  .detail .body .arrow { color: var(--accent-ink); font-weight: 600; }
 
   .grade { display: none; gap: 8px; margin-top: 12px; }
   .grade.on { display: flex; }
@@ -299,9 +319,10 @@ function render() {
     (flipped ? '' : '<div class="prompt">먼저 소리 내어 답해 보세요 · 탭하면 정답</div>') + '</div>' +
     (flipped
       ? '<div class="plate"><div class="lbl mono">' + backLabel + '</div><div class="txt">' + esc(backTxt) + '</div>' +
-        (card.url ? '<a href="' + card.url + '" target="_blank" rel="noopener">쇼츠로 확인하기</a>' : '') + '</div>'
+        (card.url ? '<div class="links"><a href="' + card.url + '" target="_blank" rel="noopener">쇼츠로 확인하기</a></div>' : '') + '</div>'
       : '') +
     '</div>' +
+    (flipped && card.note ? detailHtml(card.note) : '') +
     '<div class="grade' + (flipped ? ' on' : '') + '">' +
     '<button class="g0" data-g="0">모름</button>' +
     '<button class="g1" data-g="1">애매</button>' +
@@ -329,6 +350,19 @@ function esc(s) {
   return String(s).replace(/[&<>"]/g, function (c) {
     return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
   });
+}
+
+// 상세 설명 — 원문 줄바꿈을 그대로 살리고, "→" 로 시작하는 줄만 강조한다.
+// (마크다운 파서를 넣지 않는다. 설명 형식이 사람마다 달라 깨지기 쉽다)
+function detailHtml(text) {
+  var lines = String(text).split('\n');
+  // 첫 줄은 영어 문장 자체라 카드 앞면과 겹친다 — 뺀다
+  if (lines.length && lines[0].trim()) { lines = lines.slice(1); }
+  var body = lines.map(function (l) {
+    var e = esc(l);
+    return l.trim().indexOf('→') === 0 ? '<span class="arrow">' + e + '</span>' : e;
+  }).join('\n').replace(/^\n+/, '');
+  return '<details class="detail"><summary>자세히</summary><div class="body">' + body + '</div></details>';
 }
 
 // ── 조작 ────────────────────────────────────────────────────────────────────
