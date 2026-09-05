@@ -1,10 +1,10 @@
 ﻿# 듣보잡 영어 — 전체 문장 목록
 
-> 총 235개 · 2026-09-05 23:56 기준 (KST) · 이 파일은 `build-web.ps1` 이 만든다. 고칠 때는 `data\*.tsv` 를 고친다.
+> 총 235개 · 2026-09-06 00:00 기준 (KST) · 이 파일은 `build-web.ps1` 이 만든다. 고칠 때는 `data\*.tsv` 를 고친다.
 
 - **보냄** 10개 · **이전 학습** 5개 · **예정** 220개
-- 번역 **확인필요** 46개 · **검수완료** 25개
-- 상세 설명 있는 항목 **30개**
+- 번역 **확인필요** 38개 · **검수완료** 51개
+- 상세 설명 있는 항목 **60개**
 - 상태: ✅ 보냄 · 🔁 이전에 학습(발송 제외) · ⬜ 예정 / 검수: ⚠️ 확인필요 · ✔ 검수완료 / 📖 상세 설명 있음
 
 | # | 표현 | 뜻 | 상태 | 검수 | 상세 | 쇼츠 |
@@ -23,7 +23,7 @@
 | 012 | ONE LESS THING TO WORRY ABOUT | 걱정거리 하나 줄었네 | ✅ |  | 📖 | [▶](https://www.youtube.com/shorts/zb2i_BMD6Jg) |
 | 013 | NOT BY A LONG SHOT | 어림도 없어 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/X70Pw7FUwl8) |
 | 014 | DON'T HOLD THAT AGAINST ME | 그걸로 나 나쁘게 보진 마 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/p8amDqyC7WI) |
-| 015 | I WOULDN'T COUNT ON IT | 난 그걸 너무 기대하진 않겠어 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/SR-Dhiu2tnY) |
+| 015 | I WOULDN'T COUNT ON IT | 너무 기대하진 않겠어 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/SR-Dhiu2tnY) |
 | 016 | I REST MY CASE | 이걸로 내 말이 맞다는 게 증명됐네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/VOF6ntV8oXc) |
 | 017 | GET A LOAD OF THIS | 이것 좀 봐 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/vx1lP2q2JW0) |
 | 018 | I'LL GRANT YOU THAT | 그 점은 인정할게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/41xouw08M9s) |
@@ -39,36 +39,36 @@
 | 028 | I'LL TAKE THAT AS A YES | 그럼 동의한 걸로 알게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/2vMWnkz8ufU) |
 | 029 | WHAT ELSE IS NEW? | 뭐, 늘 그렇지 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/XwdB__DA87M) |
 | 030 | THAT'S A HARD PASS | 그건 절대 사양할게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/aJsQhTUHamo) |
-| 031 | I CAN'T QUITE PLACE IT | 뭔지 딱 집어 말을 못 하겠어 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/2lmbXciB0V8) |
-| 032 | I'M GONNA WING IT | 즉흥으로 해볼래 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/l2_ZqRJ8rZE) |
-| 033 | I'M NOT CUT OUT FOR THIS | 난 이런 거에 안 맞아 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/ffdYsDjjlxE) |
-| 034 | I'LL SIT THIS ONE OUT | 이번엔 빠질게 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/Dej_o4Z1lds) |
-| 035 | WE'RE WAY PAST THAT | 그 단계는 한참 지났어 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/sbYaHNChQbQ) |
-| 036 | IT CUTS BOTH WAYS | 그건 양쪽 다 마찬가지야 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/0KMB_Wvx0e8) |
-| 037 | I CAN'T KEEP THIS UP | 이렇게 계속은 못 하겠어 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/AL-3d2_Quws) |
-| 038 | THAT ABOUT COVERS IT | 그 정도면 다 된 것 같아 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/Z5F6htERzko) |
-| 039 | CAN'T WIN THEM ALL | 다 이길 순 없지 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/2KpBTVnNZ1M) |
-| 040 | I'M GONNA HOLD YOU TO THAT | 그 말 꼭 지켜야 해 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/R--1gnRuQmc) |
-| 041 | APPARENTLY NOT | 아닌가 보네 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/MkF2FA6znF8) |
-| 042 | YOU'RE ASKING FOR TROUBLE | 너 사서 고생하는 거야 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/3SR1z4zqs5k) |
-| 043 | THAT SHOULD DO IT | 그럼 됐을 거야 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/g435w4YCIrM) |
-| 044 | IT'S NOT OVER YET | 아직 안 끝났어 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/-UNRNSFkJDg) |
-| 045 | THAT'S BENEATH YOU | 너답지 않은 짓이야 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/ccDih99bPT8) |
-| 046 | THAT'S THAT | 그걸로 끝이야 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/2FUL_74KPB0) |
-| 047 | I WASN'T BORN YESTERDAY | 내가 그렇게 어수룩해 보여? | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/x9lX48EU3QA) |
-| 048 | I'M GETTING THERE | 조금씩 되고 있어 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/4aF_sYmGwb8) |
-| 049 | WHAT GIVES? | 대체 무슨 일이야? | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/dh83eGasa9A) |
-| 050 | YOU ARE IMPOSSIBLE | 너 진짜 못 말린다 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/5PPfCHOdb9I) |
-| 051 | SO MUCH FOR THAT | 그건 그렇게 끝났네 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/MSu5aho-RfY) |
-| 052 | DON'T TEMPT ME | 나 흔들리게 하지 마 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/99UYJAncbes) |
-| 053 | THIS AIN'T IT | 이건 아니야 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/psGlJ1mWDjs) |
-| 054 | THE SKY'S THE LIMIT | 한계란 없어 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/ltjAx3Rz8D0) |
-| 055 | THAT'S MESSED UP | 그건 진짜 너무했다 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/1h8UTnGPGKs) |
-| 056 | WHAT DO THEY HAVE ON YOU? | 걔들이 네 약점을 뭘 쥐고 있는 거야? | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/OMKfZUVWkGk) |
-| 057 | YOU REALIZE THAT, RIGHT? | 그거 알고 있는 거지? | ⬜ |  |  | [▶](https://www.youtube.com/shorts/JfV_U_8MbbY) |
-| 058 | YOU CAUGHT ME OFF GUARD | 너 때문에 허 찔렸어 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/ijqxDY5H1VM) |
-| 059 | DON'T PUSH YOUR LUCK | 너무 욕심부리지 마 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/p5lx2aiqJa8) |
-| 060 | GET REAL | 현실을 봐 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/K7RnLZKOc2k) |
+| 031 | I CAN'T QUITE PLACE IT | 어디서 접했는지 딱 떠오르진 않아 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/2lmbXciB0V8) |
+| 032 | I'M GONNA WING IT | 그냥 즉흥적으로 해 볼게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/l2_ZqRJ8rZE) |
+| 033 | I'M NOT CUT OUT FOR THIS | 난 이 일에 안 맞는 것 같아 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/ffdYsDjjlxE) |
+| 034 | I'LL SIT THIS ONE OUT | 이번엔 난 빠질게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/Dej_o4Z1lds) |
+| 035 | WE'RE WAY PAST THAT | 우린 이미 그 단계를 한참 지났어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/sbYaHNChQbQ) |
+| 036 | IT CUTS BOTH WAYS | 그건 양쪽에 다 적용돼 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/0KMB_Wvx0e8) |
+| 037 | I CAN'T KEEP THIS UP | 나 이렇게는 더 못 버티겠어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/AL-3d2_Quws) |
+| 038 | THAT ABOUT COVERS IT | 그 정도면 다 얘기한 것 같아 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/Z5F6htERzko) |
+| 039 | CAN'T WIN THEM ALL | 다 이길 순 없지 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/2KpBTVnNZ1M) |
+| 040 | I'M GONNA HOLD YOU TO THAT | 그 말 꼭 지켜야 해 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/R--1gnRuQmc) |
+| 041 | APPARENTLY NOT | 보아하니 아닌가 봐 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/MkF2FA6znF8) |
+| 042 | YOU'RE ASKING FOR TROUBLE | 너 그러다 문제 생겨 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/3SR1z4zqs5k) |
+| 043 | THAT SHOULD DO IT | 그 정도면 될 거야 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/g435w4YCIrM) |
+| 044 | IT'S NOT OVER YET | 아직 끝난 건 아니야 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/-UNRNSFkJDg) |
+| 045 | THAT'S BENEATH YOU | 그런 행동은 너답지 않아 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/ccDih99bPT8) |
+| 046 | THAT'S THAT | 그걸로 끝이야 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/2FUL_74KPB0) |
+| 047 | I WASN'T BORN YESTERDAY | 나 그렇게 쉽게 속는 사람 아니야 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/x9lX48EU3QA) |
+| 048 | I'M GETTING THERE | 점점 돼 가고 있어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/4aF_sYmGwb8) |
+| 049 | WHAT GIVES? | 대체 무슨 일이야? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/dh83eGasa9A) |
+| 050 | YOU ARE IMPOSSIBLE | 너 진짜 못 말린다 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/5PPfCHOdb9I) |
+| 051 | SO MUCH FOR THAT | 그건 물 건너갔네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/MSu5aho-RfY) |
+| 052 | DON'T TEMPT ME | 나 흔들리게 하지 마 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/99UYJAncbes) |
+| 053 | THIS AIN'T IT | 이건 좀 아닌데 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/psGlJ1mWDjs) |
+| 054 | THE SKY'S THE LIMIT | 한계란 없어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/ltjAx3Rz8D0) |
+| 055 | THAT'S MESSED UP | 그건 너무한데 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/1h8UTnGPGKs) |
+| 056 | WHAT DO THEY HAVE ON YOU? | 그 사람들이 네 약점이라도 잡고 있어? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/OMKfZUVWkGk) |
+| 057 | YOU REALIZE THAT, RIGHT? | 그건 알고 있는 거지? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/JfV_U_8MbbY) |
+| 058 | YOU CAUGHT ME OFF GUARD | 너 때문에 허 찔렸어 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/ijqxDY5H1VM) |
+| 059 | DON'T PUSH YOUR LUCK | 운 좋았다고 더 바라진 마 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/p5lx2aiqJa8) |
+| 060 | GET REAL | 현실 좀 봐 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/K7RnLZKOc2k) |
 | 061 | WHERE DO YOU GET OFF? | 무슨 자격으로 그런 소릴 해? | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/PNR6dys6cl4) |
 | 062 | THAT'S EASIER SAID THAN DONE | 말이야 쉽지 | ⬜ |  |  | [▶](https://www.youtube.com/shorts/cN_0rrcqUmI) |
 | 063 | THAT'S A NEW LOW | 이보다 더 최악일 순 없다 | ⬜ | ⚠️ |  | [▶](https://www.youtube.com/shorts/73Pl9FmqW-Q) |

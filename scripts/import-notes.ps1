@@ -54,17 +54,36 @@ foreach ($p in $phrases) {
     $lookup[$key] = $p.No
 }
 
-if (-not $NotesDir) { $NotesDir = Join-Path $cfg.Dir['data'] 'notes' }
-if (-not (Test-Path -LiteralPath $NotesDir)) {
-    New-Item -ItemType Directory -Path $NotesDir -Force | Out-Null
+# 폴더 이름을 헷갈리기 쉬워서(note / notes) 둘 다 읽는다. 같은 번호가 겹치면 나중 파일이 이긴다.
+$dirs = @()
+if ($NotesDir) { $dirs = @($NotesDir) }
+else {
+    foreach ($name in 'notes', 'note') {
+        $d = Join-Path $cfg.Dir['data'] $name
+        if (Test-Path -LiteralPath $d) { $dirs += $d }
+    }
+    if ($dirs.Count -eq 0) {
+        $d = Join-Path $cfg.Dir['data'] 'notes'
+        New-Item -ItemType Directory -Path $d -Force | Out-Null
+        $dirs = @($d)
+    }
 }
-$files = @(Get-ChildItem -LiteralPath $NotesDir -Filter '*.md' -File | Sort-Object Name)
+
+$files = @()
+foreach ($d in $dirs) {
+    $files += @(Get-ChildItem -LiteralPath $d -Filter '*.md' -File | Sort-Object Name)
+}
 if ($files.Count -eq 0) {
     Write-Host ''
-    Write-Host (' 설명 파일이 없습니다. ChatGPT 답변을 .md 로 저장해서 여기에 넣으세요:' ) -ForegroundColor Yellow
-    Write-Host ('   {0}' -f $NotesDir) -ForegroundColor Yellow
+    Write-Host ' 설명 파일이 없습니다. ChatGPT 답변을 .md 로 저장해서 여기에 넣으세요:' -ForegroundColor Yellow
+    foreach ($d in $dirs) { Write-Host ('   {0}' -f $d) -ForegroundColor Yellow }
     Write-Host ''
     exit 0
+}
+Write-Host ''
+Write-Host (' 읽는 파일 {0}개' -f $files.Count) -ForegroundColor DarkGray
+foreach ($f in $files) {
+    Write-Host ('   {0}\{1}  ({2:N0} KB)' -f (Split-Path $f.DirectoryName -Leaf), $f.Name, ($f.Length / 1KB)) -ForegroundColor DarkGray
 }
 
 # ── 블록 나누기 ─────────────────────────────────────────────────────────────
@@ -73,6 +92,8 @@ if ($files.Count -eq 0) {
 # 시작하거나 그 줄이 파일/구분선 바로 뒤일 때만 제목으로 인정한다.
 $items = @{}
 $unmatched = @()
+$origin = @{}
+$dupes = @()
 
 foreach ($f in $files) {
     $lines = Get-Content -LiteralPath $f.FullName -Encoding UTF8
@@ -101,6 +122,11 @@ foreach ($f in $files) {
         if ($isHeading) {
             if ($curNo -gt 0) { $items[$curNo] = ($buf -join "`n").Trim() }
             $curNo = $lookup[$key]
+            $tag = '{0}\{1}' -f (Split-Path $f.DirectoryName -Leaf), $f.Name
+            if ($origin.ContainsKey($curNo) -and $origin[$curNo] -ne $tag) {
+                $dupes += ('{0:d3}: {1} → {2} 로 덮어씀' -f $curNo, $origin[$curNo], $tag)
+            }
+            $origin[$curNo] = $tag
             $buf = New-Object System.Collections.Generic.List[string]
             $buf.Add($trimmed)
         }
@@ -204,6 +230,13 @@ Write-Host (' 설명 {0}개를 번호에 붙였습니다 — {1}' -f $notes.Coun
 foreach ($n in ($items.Keys | Sort-Object)) {
     Write-Host ('   {0:d3}  {1}  ({2}자)' -f $n, $byNo[$n].Phrase, $items[$n].Length) -ForegroundColor DarkGray
 }
+if ($dupes.Count -gt 0) {
+    Write-Host ''
+    Write-Host (' 같은 번호가 여러 파일에 있습니다 {0}건 — 나중 파일 내용을 씁니다:' -f $dupes.Count) -ForegroundColor Yellow
+    $dupes | Select-Object -First 8 | ForEach-Object { Write-Host ('   ' + $_) -ForegroundColor Yellow }
+    if ($dupes.Count -gt 8) { Write-Host ('   … 외 {0}건' -f ($dupes.Count - 8)) -ForegroundColor Yellow }
+}
+
 $short = @($notes | Where-Object { $_.body.Length -lt 200 })
 if ($short.Count -gt 0) {
     Write-Host ''
