@@ -1,8 +1,8 @@
 ﻿# 듣보잡 영어 — 전체 문장 목록
 
-> 총 235개 · 2026-09-06 07:35 기준 (KST) · 이 파일은 `build-web.ps1` 이 만든다. 고칠 때는 `data\*.tsv` 를 고친다.
+> 총 235개 · 2026-09-13 20:47 기준 (KST) · 이 파일은 `build-web.ps1` 이 만든다. 고칠 때는 `data\*.tsv` 를 고친다.
 
-- **보냄** 10개 · **이전 학습** 5개 · **예정** 220개
+- **보냄** 15개 · **이전 학습** 5개 · **예정** 215개
 - 번역 **확인필요** 0개 · **검수완료** 208개
 - 상세 설명 있는 항목 **235개**
 - 상태: ✅ 보냄 · 🔁 이전에 학습(발송 제외) · ⬜ 예정 / 검수: ⚠️ 확인필요 · ✔ 검수완료 / 📖 상세 설명 있음
@@ -24,11 +24,11 @@
 | 013 | NOT BY A LONG SHOT | 어림도 없어 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/X70Pw7FUwl8) |
 | 014 | DON'T HOLD THAT AGAINST ME | 그걸로 나 나쁘게 보진 마 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/p8amDqyC7WI) |
 | 015 | I WOULDN'T COUNT ON IT | 너무 기대하진 않겠어 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/SR-Dhiu2tnY) |
-| 016 | I REST MY CASE | 이걸로 내 말이 맞다는 게 증명됐네 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/VOF6ntV8oXc) |
-| 017 | GET A LOAD OF THIS | 이것 좀 봐 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/vx1lP2q2JW0) |
-| 018 | I'LL GRANT YOU THAT | 그 점은 인정할게 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/41xouw08M9s) |
-| 019 | COULD'VE FOOLED ME | 난 전혀 그렇게 안 보이던데 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/AKse2KXC5m8) |
-| 020 | YOU TOOK THE WORDS RIGHT OUT OF MY MOUTH | 딱 내가 하려던 말이야 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/wAt3gf1bj2M) |
+| 016 | I REST MY CASE | 이걸로 내 말이 맞다는 게 증명됐네 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/VOF6ntV8oXc) |
+| 017 | GET A LOAD OF THIS | 이것 좀 봐 | ✅ |  | 📖 | [▶](https://www.youtube.com/shorts/vx1lP2q2JW0) |
+| 018 | I'LL GRANT YOU THAT | 그 점은 인정할게 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/41xouw08M9s) |
+| 019 | COULD'VE FOOLED ME | 난 전혀 그렇게 안 보이던데 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/AKse2KXC5m8) |
+| 020 | YOU TOOK THE WORDS RIGHT OUT OF MY MOUTH | 딱 내가 하려던 말이야 | ✅ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/wAt3gf1bj2M) |
 | 021 | YOU'RE ON THIN ICE | 너 지금 아슬아슬해 | ⬜ |  | 📖 | [▶](https://www.youtube.com/shorts/LnK8OwfQYS8) |
 | 022 | DON'T SELL YOURSELF SHORT | 너 자신을 너무 과소평가하지 마 | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/js0l3I-2GBs) |
 | 023 | HOW'S THAT WORKING OUT FOR YOU? | 그렇게 해 보니까 어때? | ⬜ | ✔ | 📖 | [▶](https://www.youtube.com/shorts/GBdBEaIiouY) |

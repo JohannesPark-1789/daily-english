@@ -143,14 +143,23 @@
     font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--muted);
     display: flex; align-items: center; gap: 6px;
   }
-  /* A: / B: 대화 */
-  .detail .dlg {
-    padding: 12px 14px; background: var(--bg); border-radius: 6px;
-    border-left: 3px solid var(--line); display: flex; flex-direction: column; gap: 3px;
+  /* A: / B: 대화 — 주고받는 한 세트로 보이도록 한 상자에 묶는다 */
+  .detail .talk {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    overflow: hidden;
   }
-  .detail .dlg .who { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .08em; }
-  .detail .dlg .en { font-weight: 600; }
-  .detail .dlg .ko { color: var(--muted); font-size: 14px; }
+  .detail .turn { display: flex; gap: 10px; padding: 13px 14px; }
+  .detail .turn + .turn { border-top: 1px solid var(--line); }
+  .detail .turn .who {
+    flex: none; width: 22px; height: 22px; margin-top: 2px; border-radius: 50%;
+    background: var(--ink); color: var(--bg);
+    font-size: 11px; font-weight: 700; line-height: 22px; text-align: center;
+  }
+  .detail .turn .say { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .detail .turn .say .en { font-weight: 600; color: var(--ink); }
+  .detail .turn .say .ko { color: var(--muted); font-size: 14px; }
+  /* 꼬리표 바로 뒤에 대화가 오면 붙여서 한 묶음으로 */
+  .detail .body > .label + .talk { margin-top: 6px; }
   .detail .body > h4 + * { margin-top: 8px; }
   .detail .body > * + h4 { margin-top: 22px; }
 
@@ -427,8 +436,8 @@ function esc(s) {
 // (마크다운 파서를 넣지 않는다. 설명 형식이 사람마다 달라 깨지기 쉽다)
 function detailHtml(text) {
   var lines = String(text).split('\n');
-  // 첫 줄은 영어 문장 자체라 카드 앞면과 겹친다 — 뺀다
-  if (lines.length && lines[0].trim()) { lines = lines.slice(1); }
+  if (lines.length && lines[0].trim()) { lines = lines.slice(1); }   // 첫 줄은 카드 앞면과 겹친다
+
   // 빈 줄 기준으로 덩어리를 나눈다
   var blocks = [], cur = [];
   lines.forEach(function (l) {
@@ -441,8 +450,8 @@ function detailHtml(text) {
   var merged = [];
   blocks.forEach(function (b) {
     var prev = merged[merged.length - 1];
-    if (prev && prev.length === 1 && prev[0].length < 24 && /[,，]$/.test(prev[0]) &&
-        !isEnglishLine(prev[0]) && !isEnglishLine(b[0])) {
+    if (prev && prev.length === 1 && prev[0].length < 24 && /[,\uFF0C]$/.test(prev[0]) &&
+        !isEnglishLine(prev[0]) && !isSpeakerLine(b[0]) && !isEnglishLine(b[0])) {
       prev.push.apply(prev, b);
       return;
     }
@@ -450,81 +459,82 @@ function detailHtml(text) {
   });
   blocks = merged;
 
-  var html = '';
+  // 덩어리를 줄 단위로 훑으며 조각을 만든다.
+  // 화자 줄(A: / B:)은 빈 줄로 끊겨 있어도 연속이면 한 대화로 묶는다.
+  var parts = [];     // {kind:'talk'|'html', ...}
   var first = true;
+
+  function pushHtml(h) { parts.push({ kind: 'html', html: h }); }
+
+  function pushTurn(line) {
+    var m = line.match(/^([A-Za-z]|[\uAC00-\uD7A3]{1,2})\s*[:\uFF1A]\s*(.+)$/);
+    var who = m[1], rest = m[2];
+    var cut = rest.split(/\s+\/\s+/);
+    var en = cut[0], ko = cut.length > 1 ? cut.slice(1).join(' / ') : '';
+    if (!ko && !isEnglishLine(en)) { ko = en; en = ''; }
+    var last = parts[parts.length - 1];
+    if (!last || last.kind !== 'talk') { last = { kind: 'talk', turns: [] }; parts.push(last); }
+    last.turns.push({ who: who, en: en, ko: ko });
+  }
+
   blocks.forEach(function (b) {
-    // 핵심 한 줄 — 아침 카톡에 나가는 그 문장
-    if (b.length === 1 && /^(핵심|기억 고리|한 줄 요약|요약)\s*[:：]/.test(b[0])) {
-      html += '<p class="key"><span>' + rich(b[0].replace(/^[^:：]*[:：]\s*/, '')) + '</span></p>';
+    // 핵심 한 줄
+    if (b.length === 1 && /^(\uD575\uC2EC|\uAE30\uC5B5 \uACE0\uB9AC|\uD55C \uC904 \uC694\uC57D|\uC694\uC57D)\s*[:\uFF1A]/.test(b[0])) {
+      pushHtml('<p class="key"><span>' + rich(b[0].replace(/^[^:\uFF1A]*[:\uFF1A]\s*/, '')) + '</span></p>');
       return;
     }
     // "짧은 대화:" 같은 꼬리표
-    if (b.length === 1 && /[:：]\s*$/.test(b[0]) && b[0].length <= 20) {
-      var icon = /대화|예시|예문/.test(b[0]) ? '💬' : '▸';
-      html += '<div class="label">' + icon + ' ' + esc(b[0].replace(/[:：]\s*$/, '')) + '</div>';
-      return;
-    }
-    // A: / B: 로 시작하는 대화 (영어 / 한국어 가 슬래시로 붙어 오는 경우가 많다)
-    if (b.every(function (l) { return /^[A-Za-z가-힣]{1,3}\s*[:：]\s*\S/.test(l); })) {
-      html += b.map(function (l) {
-        var m = l.match(/^([A-Za-z가-힣]{1,3})\s*[:：]\s*(.+)$/);
-        var rest = m[2];
-        var parts = rest.split(/\s+\/\s+/);
-        var en = parts[0], ko = parts.length > 1 ? parts.slice(1).join(' / ') : '';
-        return '<div class="dlg"><span class="who">' + esc(m[1]) + '</span>' +
-               '<span class="en">' + esc(en) + '</span>' +
-               (ko ? '<span class="ko">' + esc(ko) + '</span>' : '') + '</div>';
-      }).join('');
-      return;
-    }
-    // 화살표 줄만 모인 덩어리
-    if (b.every(function (l) { return l.indexOf('→') === 0; })) {
-      html += '<div class="arrows">' + b.map(function (l) {
-        return '<p class="arrow">' + esc(l) + '</p>';
-      }).join('') + '</div>';
+    if (b.length === 1 && /[:\uFF1A]\s*$/.test(b[0]) && b[0].length <= 20 && !isSpeakerLine(b[0])) {
+      var icon = /\uB300\uD654|\uC608\uC2DC|\uC608\uBB38/.test(b[0]) ? '\uD83D\uDCAC' : '\u25B8';
+      pushHtml('<div class="label">' + icon + ' ' + esc(b[0].replace(/[:\uFF1A]\s*$/, '')) + '</div>');
       return;
     }
     // 번호 붙은 절 제목
     if (/^\d+[.)]\s+/.test(b[0])) {
-      html += '<h4>' + esc(b[0]) + '</h4>';
+      pushHtml('<h4>' + esc(b[0]) + '</h4>');
       b = b.slice(1);
       if (!b.length) { return; }
     }
-    // 영어 문장만 홀로 있는 덩어리 (You can count on me. 같은 인용)
-    if (b.length === 1 && isEnglishLine(b[0])) {
-      html += '<div class="ex"><span class="en">' + esc(b[0]) + '</span></div>';
-      return;
-    }
-    // 영어 예시 + 해석이 번갈아 오는 덩어리 (대화 예시)
-    if (b.length >= 2 && isEnglishLine(b[0]) && !isEnglishLine(b[1])) {
-      for (var i = 0; i + 1 < b.length; i += 2) {
-        html += '<div class="ex"><span class="en">' + esc(b[i]) + '</span>' +
-                '<span class="ko">' + esc(b[i + 1]) + '</span></div>';
-      }
-      if (b.length % 2) { html += '<p>' + esc(b[b.length - 1]) + '</p>'; }
-      return;
-    }
-    // 그 밖에는 문단으로 다시 흘린다 (원문 줄바꿈은 채팅창 폭 기준이라 버린다)
+
     var cls = first ? ' class="lead"' : '';
     var para = [];
+    function flush() {
+      if (!para.length) { return; }
+      pushHtml('<p' + cls + '>' + rich(para.join(' ')) + '</p>');
+      para = [];
+      cls = '';
+    }
+
     b.forEach(function (l) {
-      if (l.indexOf('→') === 0) {
-        if (para.length) { html += '<p' + cls + '>' + rich(para.join(' ')) + '</p>'; para = []; cls = ''; }
-        html += '<p class="arrow">' + rich(l) + '</p>';
-      }
-      else if (isEnglishLine(l) && b.length > 1) {
-        if (para.length) { html += '<p' + cls + '>' + rich(para.join(' ')) + '</p>'; para = []; cls = ''; }
-        html += '<div class="ex"><span class="en">' + esc(l) + '</span></div>';
-      }
+      if (isSpeakerLine(l)) { flush(); pushTurn(l); }
+      else if (l.indexOf('\u2192') === 0) { flush(); pushHtml('<p class="arrow">' + rich(l) + '</p>'); }
+      else if (isEnglishLine(l)) { flush(); pushHtml('<div class="ex"><span class="en">' + esc(l) + '</span></div>'); }
       else { para.push(l); }
     });
-    if (para.length) { html += '<p' + cls + '>' + rich(para.join(' ')) + '</p>'; }
+    flush();
     first = false;
   });
 
+  // 조각을 HTML 로 편다. 대화는 한 상자 안에 A·B 가 함께 들어간다.
+  var html = parts.map(function (p) {
+    if (p.kind === 'html') { return p.html; }
+    return '<div class="talk">' + p.turns.map(function (t) {
+      return '<div class="turn"><span class="who">' + esc(t.who) + '</span><div class="say">' +
+        (t.en ? '<span class="en">' + esc(t.en) + '</span>' : '') +
+        (t.ko ? '<span class="ko">' + esc(t.ko) + '</span>' : '') +
+        '</div></div>';
+    }).join('') + '</div>';
+  }).join('');
+
   var open = /[?&#]open=1/.test(location.search + location.hash) ? ' open' : '';
-  return '<details class="detail"' + open + '><summary><span class="lbl-txt">📖 이 표현 자세히 보기</span></summary>' +
+  return '<details class="detail"' + open + '><summary><span class="lbl-txt">\uD83D\uDCD6 \uC774 \uD45C\uD604 \uC790\uC138\uD788 \uBCF4\uAE30</span></summary>' +
          '<div class="body">' + html + '</div></details>';
+}
+
+// A: / B: 처럼 화자로 시작하는 줄인지 (핵심: · 요약: 같은 꼬리표와 구분된다)
+function isSpeakerLine(s) {
+  return /^([A-Za-z]|[\uAC00-\uD7A3]{1,2})\s*[:\uFF1A]\s*\S/.test(s) &&
+         !/^(\uD575\uC2EC|\uC694\uC57D|\uC815\uB9AC|\uCC38\uACE0|\uC608\uC2DC|\uB300\uD654)\s*[:\uFF1A]/.test(s);
 }
 
 // 한국어 설명 안에 섞인 영어 표현과 따옴표로 묶인 뜻을 눈에 걸리게 만든다.
