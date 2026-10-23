@@ -123,6 +123,9 @@ try {
         $progress.lastSentDate = $today
         $progress.nextNo = $item.No + 1
         $progress.sentNos = @(@($progress.sentNos) + $item.No)
+        # 날짜까지 남긴다 — 주간 복습이 "그 주에 보낸 것"을 이것만 보고 뽑는다.
+        # (예전에는 로컬 로그 파일을 읽었는데, GitHub Actions 에는 그 파일이 없다)
+        $progress.history = @(@($progress.history) + [pscustomobject]@{ no = $item.No; date = $today })
         Save-DeProgress -Config $cfg -Progress $progress
 
         $peek = Get-DeNextItem -Phrases $phrases -Progress $progress -Config $cfg

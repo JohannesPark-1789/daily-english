@@ -32,22 +32,33 @@ try {
         exit 0
     }
 
-    # 이번 주 월요일 00:00 부터 오늘까지 로그에서 실제 발송분을 뽑는다.
-    # (progress.sentNos 는 누적이라 주 단위로 자르려면 로그가 정확하다)
+    # 이번 주 월요일 00:00 부터 오늘까지 실제로 보낸 번호를 뽑는다.
+    # 1순위는 progress.json 의 history (어디서 돌든 같다), 없으면 옛 방식대로 로그를 읽는다.
     $monday = $today.Date.AddDays(-(([int]$today.DayOfWeek + 6) % 7))
     $phrases = Get-DePhrases -Config $cfg
     $byNo = @{}
     foreach ($p in $phrases) { $byNo[$p.No] = $p }
 
     $nos = New-Object System.Collections.Generic.List[int]
-    foreach ($f in (Get-ChildItem -LiteralPath $logDir -Filter 'daily-english-*.log' -ErrorAction SilentlyContinue)) {
-        foreach ($line in (Get-Content -LiteralPath $f.FullName -Encoding UTF8)) {
-            $m = [regex]::Match($line, '^(\d{4}-\d{2}-\d{2}) .*\[DONE\] 발송 완료 — (\d{3}) ')
-            if (-not $m.Success) { continue }
-            $when = [DateTime]::ParseExact($m.Groups[1].Value, 'yyyy-MM-dd', $null)
-            if ($when -lt $monday -or $when -gt $today.Date) { continue }
-            $n = [int]$m.Groups[2].Value
-            if (-not $nos.Contains($n)) { $nos.Add($n) }
+    $progress = Get-DeProgress -Config $cfg
+    foreach ($h in @($progress.history)) {
+        if (-not $h.date -or -not $h.no) { continue }
+        $when = [DateTime]::ParseExact([string]$h.date, 'yyyy-MM-dd', $null)
+        if ($when -lt $monday -or $when -gt $today.Date) { continue }
+        $n = [int]$h.no
+        if (-not $nos.Contains($n)) { $nos.Add($n) }
+    }
+
+    if ($nos.Count -eq 0 -and (Test-Path -LiteralPath $logDir)) {
+        foreach ($f in (Get-ChildItem -LiteralPath $logDir -Filter 'daily-english-*.log' -ErrorAction SilentlyContinue)) {
+            foreach ($line in (Get-Content -LiteralPath $f.FullName -Encoding UTF8)) {
+                $m = [regex]::Match($line, '^(\d{4}-\d{2}-\d{2}) .*\[DONE\] 발송 완료 — (\d{3}) ')
+                if (-not $m.Success) { continue }
+                $when = [DateTime]::ParseExact($m.Groups[1].Value, 'yyyy-MM-dd', $null)
+                if ($when -lt $monday -or $when -gt $today.Date) { continue }
+                $n = [int]$m.Groups[2].Value
+                if (-not $nos.Contains($n)) { $nos.Add($n) }
+            }
         }
     }
     $weekNos = @($nos | Sort-Object)

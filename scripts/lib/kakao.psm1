@@ -2,7 +2,7 @@
 # Windows PowerShell 5.1 기준. 외부 의존성 없음 (Invoke-RestMethod 만 쓴다).
 
 $ErrorActionPreference = 'Stop'
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch { }
 
 $script:AuthBase = 'https://kauth.kakao.com'
 $script:ApiBase = 'https://kapi.kakao.com'
@@ -10,7 +10,12 @@ $script:ApiBase = 'https://kapi.kakao.com'
 # ── 시간·로그 ────────────────────────────────────────────────────────────────
 
 function Get-KstNow {
-    $tz = [System.TimeZoneInfo]::FindSystemTimeZoneById('Korea Standard Time')
+    # 시간대 ID 가 Windows 와 리눅스에서 다르다 (GitHub Actions 는 리눅스).
+    $tz = $null
+    foreach ($id in 'Korea Standard Time', 'Asia/Seoul') {
+        try { $tz = [System.TimeZoneInfo]::FindSystemTimeZoneById($id); break } catch { }
+    }
+    if (-not $tz) { return [DateTime]::UtcNow.AddHours(9) }   # 최후 수단: UTC+9 고정
     return [System.TimeZoneInfo]::ConvertTimeFromUtc([DateTime]::UtcNow, $tz)
 }
 
@@ -59,19 +64,25 @@ function Get-DeEnv {
     # .env 에서 KEY=VALUE 를 읽는다. 값에 = 가 있어도 첫 = 만 기준으로 자른다.
     param([Parameter(Mandatory = $true)][string]$Root)
 
-    $path = Join-Path $Root '.env'
-    if (-not (Test-Path -LiteralPath $path)) {
-        throw ".env 가 없습니다. .env.example 을 복사해서 카카오 REST API 키를 채우세요: $path"
-    }
+    # 로컬에서는 .env, GitHub Actions 에서는 환경변수(Secrets)를 쓴다. 환경변수가 우선이다.
     $map = @{}
-    foreach ($raw in (Get-Content -LiteralPath $path -Encoding UTF8)) {
-        $line = $raw.Trim()
-        if (-not $line -or $line.StartsWith('#')) { continue }
-        $i = $line.IndexOf('=')
-        if ($i -lt 1) { continue }
-        $map[$line.Substring(0, $i).Trim()] = $line.Substring($i + 1).Trim().Trim('"')
+    $path = Join-Path $Root '.env'
+    if (Test-Path -LiteralPath $path) {
+        foreach ($raw in (Get-Content -LiteralPath $path -Encoding UTF8)) {
+            $line = $raw.Trim()
+            if (-not $line -or $line.StartsWith('#')) { continue }
+            $i = $line.IndexOf('=')
+            if ($i -lt 1) { continue }
+            $map[$line.Substring(0, $i).Trim()] = $line.Substring($i + 1).Trim().Trim('"')
+        }
     }
-    if (-not $map['KAKAO_REST_API_KEY']) { throw '.env 의 KAKAO_REST_API_KEY 가 비어 있습니다.' }
+    foreach ($key in 'KAKAO_REST_API_KEY', 'KAKAO_REDIRECT_URI', 'KAKAO_CLIENT_SECRET', 'KAKAO_REFRESH_TOKEN') {
+        $v = [Environment]::GetEnvironmentVariable($key)
+        if ($v) { $map[$key] = $v.Trim() }
+    }
+    if (-not $map['KAKAO_REST_API_KEY']) {
+        throw '카카오 REST API 키가 없습니다. 로컬이면 .env, GitHub Actions 면 Secrets 의 KAKAO_REST_API_KEY 를 확인하세요.'
+    }
     if (-not $map['KAKAO_REDIRECT_URI']) { $map['KAKAO_REDIRECT_URI'] = 'http://localhost:8910/callback' }
     # KAKAO_CLIENT_SECRET 은 선택. 앱에서 Client Secret 을 "사용" 으로 켰다면 반드시 필요하다
     # (안 보내면 토큰 발급이 KOE010 / Bad client credentials 로 떨어진다).
@@ -173,10 +184,19 @@ function Save-DeTokens {
 function Get-DeTokens {
     param([Parameter(Mandatory = $true)]$Config)
     $path = Get-DeTokenPath -Config $Config
-    if (-not (Test-Path -LiteralPath $path)) {
-        throw '인증 정보가 없습니다. setup.cmd 를 먼저 한 번 실행하세요.'
+    if (Test-Path -LiteralPath $path) {
+        return (Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json)
     }
-    return (Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json)
+    # GitHub Actions 처럼 tokens.json 이 없는 환경에서는 갱신 토큰만 받아서 시작한다.
+    # access 만료를 비워 두면 Get-DeValidAccessToken 이 곧바로 갱신한다.
+    $fromEnv = [Environment]::GetEnvironmentVariable('KAKAO_REFRESH_TOKEN')
+    if ($fromEnv) {
+        return [pscustomobject]@{
+            access_token = ''; refresh_token = $fromEnv.Trim()
+            access_expires_utc = ''; refresh_expires_utc = ''; saved_utc = ''
+        }
+    }
+    throw '인증 정보가 없습니다. 로컬이면 setup.cmd 를, GitHub Actions 면 Secrets 의 KAKAO_REFRESH_TOKEN 을 확인하세요.'
 }
 
 function New-DeTokenFromCode {
@@ -234,6 +254,13 @@ function Get-DeValidAccessToken {
         throw ('토큰 갱신 실패 (setup.cmd 재실행이 필요할 수 있습니다) — {0}' -f (Get-DeHttpErrorDetail -ErrorRecord $_))
     }
     $saved = Save-DeTokens -Config $Config -Response $r
+
+    # GitHub Actions 는 tokens.json 을 보관하지 못한다. 갱신된 refresh token 을 파일로 내보내면
+    # 워크플로가 그 값으로 Secret 을 갱신한다 (안 하면 2개월 뒤 만료되어 발송이 멎는다).
+    $out = [Environment]::GetEnvironmentVariable('DE_REFRESH_OUT')
+    if ($out -and $saved.refresh_token) {
+        Set-Content -LiteralPath $out -Value $saved.refresh_token -NoNewline -Encoding utf8
+    }
     return $saved.access_token
 }
 
@@ -325,15 +352,17 @@ function Get-DeProgress {
     param([Parameter(Mandatory = $true)]$Config)
     $path = Join-Path $Config.Dir['state'] 'progress.json'
     if (-not (Test-Path -LiteralPath $path)) {
-        return [pscustomobject]@{ nextNo = [int]$Config.startNo; lastSentNo = 0; lastSentDate = ''; sentNos = @() }
+        return [pscustomobject]@{ nextNo = [int]$Config.startNo; lastSentNo = 0; lastSentDate = ''; sentNos = @(); history = @() }
     }
     $p = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json
-    # 옛 파일에는 sentNos 가 없다. JSON 배열은 1개일 때 스칼라로 오므로 @() 로 감싼다.
-    if (-not ($p.PSObject.Properties.Name -contains 'sentNos')) {
-        $p | Add-Member -NotePropertyName 'sentNos' -NotePropertyValue @() -Force
-    }
-    else {
-        $p.sentNos = @($p.sentNos)
+    # 옛 파일에는 sentNos·history 가 없다. JSON 배열은 1개일 때 스칼라로 오므로 @() 로 감싼다.
+    foreach ($field in 'sentNos', 'history') {
+        if (-not ($p.PSObject.Properties.Name -contains $field)) {
+            $p | Add-Member -NotePropertyName $field -NotePropertyValue @() -Force
+        }
+        else {
+            $p.$field = @($p.$field)
+        }
     }
     return $p
 }

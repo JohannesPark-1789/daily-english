@@ -59,6 +59,36 @@ git push            →  사이트 반영
 - 고친 줄은 `검수완료` 로 표시된다. 빈 칸으로 둔 줄은 무시한다 (실수로 지운 경우 보호)
 - 반영 전 `data\backup\translations-<시각>.tsv` 로 백업된다. `-WhatIfOnly` 로 미리 볼 수도 있다
 
+### 발송은 GitHub Actions 가 한다 (2026-10-24 이관)
+
+이 PC 의 작업 스케줄러는 **중지해 두었다**. 발송은 GitHub 서버가 돌린다.
+
+```
+.github\workflows\daily.yml    월~금 07:00 KST  (cron '0 22 * * 0-4' — UTC 기준)
+.github\workflows\weekly.yml   토   07:00 KST  (cron '0 22 * * 5')
+```
+
+- **왜 옮겼나** — PC 가 꺼져 있으면 발송이 통째로 빠진다. 실제로 2026-10-09, 10-23 두 번
+  (10-23 은 새벽 Windows 업데이트 재부팅으로 07:00 에 꺼져 있었다). 게다가 실패해도 알 방법이 없었다.
+- **이제는** PC 와 무관하게 돌고, 실패하면 GitHub 이 메일로 알려준다. 폰에서 Actions 탭을 열면
+  "보냈는지"를 바로 확인할 수 있고, **Run workflow** 로 즉시 재발송도 된다.
+- **진행 상태(`state\progress.json`)는 저장소에 커밋된다.** 발송할 때마다 워크플로가 갱신해 올린다.
+  로컬에서 수동 발송했다면 `git pull` 로 먼저 맞춰야 번호가 어긋나지 않는다.
+- **갱신 토큰은 워크플로가 Secret 에 다시 써 넣는다.** 카카오 refresh token 은 2개월마다 바뀌는데,
+  갱신분을 저장하지 않으면 조용히 만료된다 (`GH_PAT` 이 그 용도).
+
+필요한 Secret 네 개 (저장소 Settings → Secrets and variables → Actions):
+
+| 이름 | 값 | 어디서 |
+|---|---|---|
+| `KAKAO_REST_API_KEY` | 카카오 REST API 키 | `show-secrets.cmd` |
+| `KAKAO_CLIENT_SECRET` | 카카오 클라이언트 시크릿 | `show-secrets.cmd` |
+| `KAKAO_REFRESH_TOKEN` | 카카오 갱신 토큰 | `show-secrets.cmd` (이후 자동 갱신) |
+| `GH_PAT` | GitHub 개인 액세스 토큰 (repo 권한) | GitHub 에서 발급 |
+
+로컬 스케줄러로 되돌리려면 `Enable-ScheduledTask -TaskName daily-english-7am` 하고
+워크플로 파일의 `schedule:` 을 지우면 된다 (둘 다 켜 두면 하루 두 번 간다).
+
 ## 2. 실행
 
 ```

@@ -1,0 +1,74 @@
+name: 오늘의 영어 (월~금 07:00 KST)
+
+# GitHub 의 cron 은 UTC 다. KST 07:00 = 전날 UTC 22:00.
+# 월~금(KST) = 일~목(UTC) 이라 0-4 가 된다.
+on:
+  schedule:
+    - cron: '0 22 * * 0-4'
+  workflow_dispatch:
+    inputs:
+      no:
+        description: '특정 번호를 보낼 때만 입력 (비우면 다음 차례). 진행 번호는 그대로 둔다'
+        required: false
+        default: ''
+      force:
+        description: '오늘 이미 보냈어도 다시 보낸다'
+        type: boolean
+        default: false
+
+concurrency:
+  group: daily-english-send
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 발송
+        shell: pwsh
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          DE_REFRESH_OUT: ${{ runner.temp }}/refresh.txt
+        run: |
+          $args = @()
+          if ('${{ inputs.no }}' -match '^\d+$') { $args += @('-No', '${{ inputs.no }}') }
+          if ('${{ inputs.force }}' -eq 'true') { $args += @('-Force', '-Yes') }
+          & ./scripts/send-today.ps1 @args
+
+      # 카카오 갱신 토큰은 2개월마다 바뀐다. 새로 받은 값을 Secret 에 다시 넣지 않으면
+      # 언젠가 조용히 만료되어 발송이 멎는다. 실패했을 때도 토큰은 갱신됐을 수 있어 always().
+      - name: 갱신 토큰을 Secret 에 반영
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -s "${RUNNER_TEMP}/refresh.txt" ]; then
+            gh secret set KAKAO_REFRESH_TOKEN --body "$(cat "${RUNNER_TEMP}/refresh.txt")" --repo "${GITHUB_REPOSITORY}"
+            echo "갱신 토큰 Secret 갱신함"
+          else
+            echo "갱신 토큰 변화 없음"
+          fi
+
+      - name: 진행 상태 커밋
+        if: always()
+        run: |
+          if git diff --quiet -- state/progress.json; then
+            echo "진행 상태 변화 없음"
+            exit 0
+          fi
+          git config user.name  "daily-english bot"
+          git config user.email "noreply@github.com"
+          git add state/progress.json
+          git commit -m "chore(daily-english): 발송 진행 상태 갱신 [skip ci]"
+          for i in 1 2 3; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep 5
+          done
+          echo "진행 상태 push 실패" >&2
+          exit 1

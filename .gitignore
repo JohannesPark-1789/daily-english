@@ -1,13 +1,14 @@
 # 비밀값·토큰 — 절대 커밋 금지
 .env
 state/tokens.json
-state/progress.json
 
 # 로그
 logs/*
 !logs/.gitkeep
 state/*
 !state/.gitkeep
+# 진행 상태는 추적한다 — GitHub Actions 가 어디까지 보냈는지 여기로 이어받는다 (번호·날짜뿐)
+!state/progress.json
 
 # 잡파일
 Thumbs.db

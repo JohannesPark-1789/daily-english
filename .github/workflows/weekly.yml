@@ -1,0 +1,46 @@
+name: 주말 복습 카드 (토 07:00 KST)
+
+# KST 토 07:00 = UTC 금 22:00
+on:
+  schedule:
+    - cron: '0 22 * * 5'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: '기준 날짜 (yyyy-MM-dd). 비우면 오늘. 지난 주를 다시 뽑을 때 쓴다'
+        required: false
+        default: ''
+
+concurrency:
+  group: daily-english-send
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 주간 복습 발송
+        shell: pwsh
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          DE_REFRESH_OUT: ${{ runner.temp }}/refresh.txt
+        run: |
+          $args = @('-Force')
+          if ('${{ inputs.date }}' -match '^\d{4}-\d{2}-\d{2}$') { $args += @('-Date', '${{ inputs.date }}') }
+          & ./scripts/send-weekly.ps1 @args
+
+      - name: 갱신 토큰을 Secret 에 반영
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -s "${RUNNER_TEMP}/refresh.txt" ]; then
+            gh secret set KAKAO_REFRESH_TOKEN --body "$(cat "${RUNNER_TEMP}/refresh.txt")" --repo "${GITHUB_REPOSITORY}"
+            echo "갱신 토큰 Secret 갱신함"
+          else
+            echo "갱신 토큰 변화 없음"
+          fi

@@ -73,8 +73,10 @@ $action = New-ScheduledTaskAction -Execute 'powershell.exe' `
 $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek $days -At $at
 
 # PC 가 꺼져 있어 놓친 경우, 켜지고 나서 한 번 따라 실행한다.
+# WakeToRun: 절전 중이면 깨워서 실행한다 (전원 옵션의 "절전 모드 해제 타이머 허용"이 켜져 있어야 동작).
+# 완전히 종료된 상태는 어떤 설정으로도 깨울 수 없다 — 그때는 켜진 뒤 따라 실행에 의존한다.
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries `
-    -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 10)
+    -DontStopIfGoingOnBatteries -WakeToRun -ExecutionTimeLimit (New-TimeSpan -Minutes 10)
 
 Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger -Settings $settings `
     -Description $desc -Force | Out-Null
