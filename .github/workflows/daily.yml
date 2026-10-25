@@ -35,11 +35,16 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
           DE_REFRESH_OUT: ${{ runner.temp }}/refresh.txt
+          IN_NO: ${{ inputs.no }}
+          IN_FORCE: ${{ inputs.force }}
         run: |
-          $args = @()
-          if ('${{ inputs.no }}' -match '^\d+$') { $args += @('-No', '${{ inputs.no }}') }
-          if ('${{ inputs.force }}' -eq 'true') { $args += @('-Force', '-Yes') }
-          & ./scripts/send-today.ps1 @args
+          # 스플래팅은 반드시 해시테이블로 한다. 배열로 넘기면 '-Force' 가 이름이 아니라
+          # 첫 위치 인자로 들어간다 (2026-10-24 주간 발송이 정확히 이것 때문에 실패했다).
+          # 입력값은 ${{ }} 로 스크립트 본문에 박지 않고 env 로 받는다.
+          $p = @{}
+          if ($env:IN_NO -match '^\d+$') { $p['No'] = [int]$env:IN_NO }
+          if ($env:IN_FORCE -eq 'true') { $p['Force'] = $true; $p['Yes'] = $true }
+          & ./scripts/send-today.ps1 @p
 
       # 카카오 갱신 토큰은 2개월마다 바뀐다. 새로 받은 값을 Secret 에 다시 넣지 않으면
       # 언젠가 조용히 만료되어 발송이 멎는다. 실패했을 때도 토큰은 갱신됐을 수 있어 always().

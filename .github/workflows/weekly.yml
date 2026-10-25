@@ -28,10 +28,13 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
           DE_REFRESH_OUT: ${{ runner.temp }}/refresh.txt
+          IN_DATE: ${{ inputs.date }}
         run: |
-          $args = @('-Force')
-          if ('${{ inputs.date }}' -match '^\d{4}-\d{2}-\d{2}$') { $args += @('-Date', '${{ inputs.date }}') }
-          & ./scripts/send-weekly.ps1 @args
+          # 스플래팅은 반드시 해시테이블로 한다. 배열로 넘기면 '-Force' 가 이름이 아니라
+          # 첫 위치 인자(-Date)로 들어가 ParseExact 가 터진다 (2026-10-24 실패 원인).
+          $p = @{ Force = $true }
+          if ($env:IN_DATE -match '^\d{4}-\d{2}-\d{2}$') { $p['Date'] = $env:IN_DATE }
+          & ./scripts/send-weekly.ps1 @p
 
       - name: 갱신 토큰을 Secret 에 반영
         if: always()
