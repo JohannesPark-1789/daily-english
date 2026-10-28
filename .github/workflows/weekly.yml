@@ -1,10 +1,13 @@
 name: 주말 복습 카드 (토 07:00 KST)
 
-# KST 토 06:53 = UTC 금 21:53
-# 분 0 을 피하는 이유는 daily.yml 주석 참고 (정각 혼잡으로 1~3시간 지연).
+# 예약을 네 번 거는 이유와 대기 방식은 daily.yml 머리말에 적어 두었다.
+# UTC 금 18:30/19:30/20:30/21:30 = KST 토 03:30/04:30/05:30/06:30.
 on:
   schedule:
-    - cron: '53 21 * * 5'
+    - cron: '30 18 * * 5'
+    - cron: '30 19 * * 5'
+    - cron: '30 20 * * 5'
+    - cron: '30 21 * * 5'
   workflow_dispatch:
     inputs:
       date:
@@ -19,10 +22,25 @@ concurrency:
 jobs:
   send:
     runs-on: ubuntu-latest
+    timeout-minutes: 150
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
+      - name: 07:00 KST 까지 대기
+        id: gate
+        shell: pwsh
+        run: |
+          & ./scripts/wait-for-send-time.ps1 -Target '07:00' -MaxWaitMinutes 100
+
+      - name: 진행 상태 새로 받기
+        if: steps.gate.outputs.send == 'yes'
+        run: |
+          git pull --rebase --autostash || echo "진행 상태 갱신 실패 — 체크아웃 시점 상태로 진행합니다"
+
       - name: 주간 복습 발송
+        if: steps.gate.outputs.send == 'yes'
         shell: pwsh
         env:
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
@@ -33,12 +51,17 @@ jobs:
         run: |
           # 스플래팅은 반드시 해시테이블로 한다. 배열로 넘기면 '-Force' 가 이름이 아니라
           # 첫 위치 인자(-Date)로 들어가 ParseExact 가 터진다 (2026-10-24 실패 원인).
-          $p = @{ Force = $true }
+          #
+          # 예약 발송에는 -Force 를 주지 않는다. 하루에 네 번 깨우므로, 요일 검사와
+          # lastWeeklyDate 중복 검사가 살아 있어야 한 번만 나간다.
+          # 손으로 돌릴 때는 "지금 보내 달라"는 뜻이라 검사를 모두 건너뛴다.
+          $p = @{}
+          if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch') { $p['Force'] = $true }
           if ($env:IN_DATE -match '^\d{4}-\d{2}-\d{2}$') { $p['Date'] = $env:IN_DATE }
           & ./scripts/send-weekly.ps1 @p
 
       - name: 갱신 토큰을 Secret 에 반영
-        if: always()
+        if: always() && steps.gate.outputs.send == 'yes'
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
@@ -48,3 +71,22 @@ jobs:
           else
             echo "갱신 토큰 변화 없음"
           fi
+
+      # 같은 날 두 번 보내지 않으려면 lastWeeklyDate 가 저장소에 남아야 한다.
+      - name: 진행 상태 커밋
+        if: always() && steps.gate.outputs.send == 'yes'
+        run: |
+          if git diff --quiet -- state/progress.json; then
+            echo "진행 상태 변화 없음"
+            exit 0
+          fi
+          git config user.name  "daily-english bot"
+          git config user.email "noreply@github.com"
+          git add state/progress.json
+          git commit -m "chore(daily-english): 주간 복습 발송 기록 [skip ci]"
+          for i in 1 2 3; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep 5
+          done
+          echo "진행 상태 push 실패" >&2
+          exit 1

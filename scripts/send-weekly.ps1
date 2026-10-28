@@ -32,6 +32,15 @@ try {
         exit 0
     }
 
+    # 예약을 하루에 네 번 깨우므로(.github/workflows/daily.yml 머리말 참고),
+    # 같은 날 두 번 보내지 않도록 막는다. 손으로 돌릴 때(-Force)는 건너뛴다.
+    $todayStr = $today.ToString('yyyy-MM-dd')
+    $progress = Get-DeProgress -Config $cfg
+    if (-not $Force -and -not $DryRun -and $progress.lastWeeklyDate -eq $todayStr) {
+        Write-DeLog -Level 'WARN' -LogDir $logDir -Message ('오늘({0}) 주간 복습을 이미 보냈습니다 — 건너뜀' -f $todayStr)
+        exit 0
+    }
+
     # 이번 주 월요일 00:00 부터 오늘까지 실제로 보낸 번호를 뽑는다.
     # 1순위는 progress.json 의 history (어디서 돌든 같다), 없으면 옛 방식대로 로그를 읽는다.
     $monday = $today.Date.AddDays(-(([int]$today.DayOfWeek + 6) % 7))
@@ -40,7 +49,6 @@ try {
     foreach ($p in $phrases) { $byNo[$p.No] = $p }
 
     $nos = New-Object System.Collections.Generic.List[int]
-    $progress = Get-DeProgress -Config $cfg
     foreach ($h in @($progress.history)) {
         if (-not $h.date -or -not $h.no) { continue }
         $when = [DateTime]::ParseExact([string]$h.date, 'yyyy-MM-dd', $null)
@@ -129,6 +137,10 @@ try {
     if ($r.result_code -ne 0) { throw ('발송 응답이 성공이 아닙니다: {0}' -f ($r | ConvertTo-Json -Compress)) }
 
     Write-DeLog -Level 'DONE' -LogDir $logDir -Message ('주간 복습 발송 완료 — {0}문장 ({1})' -f $weekNos.Count, ($weekNos -join ', '))
+
+    # 뒤따라 깨어나는 예약이 이 날짜를 보고 건너뛴다. 저장소에 커밋되어야 뜻이 있다.
+    $progress | Add-Member -NotePropertyName lastWeeklyDate -NotePropertyValue $todayStr -Force
+    Save-DeProgress -Config $cfg -Progress $progress
     exit 0
 }
 catch {

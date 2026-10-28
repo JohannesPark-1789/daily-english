@@ -352,7 +352,7 @@ function Get-DeProgress {
     param([Parameter(Mandatory = $true)]$Config)
     $path = Join-Path $Config.Dir['state'] 'progress.json'
     if (-not (Test-Path -LiteralPath $path)) {
-        return [pscustomobject]@{ nextNo = [int]$Config.startNo; lastSentNo = 0; lastSentDate = ''; sentNos = @(); history = @() }
+        return [pscustomobject]@{ nextNo = [int]$Config.startNo; lastSentNo = 0; lastSentDate = ''; lastWeeklyDate = ''; sentNos = @(); history = @() }
     }
     $p = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json
     # 옛 파일에는 sentNos·history 가 없다. JSON 배열은 1개일 때 스칼라로 오므로 @() 로 감싼다.

@@ -1,14 +1,27 @@
 name: 오늘의 영어 (월~금 07:00 KST)
 
-# GitHub 의 cron 은 UTC 다. KST 06:53 = 전날 UTC 21:53.
-# 월~금(KST) = 일~목(UTC) 이라 0-4 가 된다.
+# ── 예약을 왜 네 번 거는가 ──────────────────────────────────────────────────
+# GitHub 의 cron 은 "그 시각에 깨운다"는 보장이 없다. 이 저장소 실측으로는 예약이
+# 매번 1~3시간 늦게 깨어났다 (10-24 2h05m / 10-26 1h46m / 10-27 3h05m /
+# 10-28 2h57m / 10-29 2h+). 분을 0 에서 53 으로 옮겨도 그대로였다 — 정각 혼잡
+# 때문이 아니라 예약 발화 자체가 best-effort 이기 때문이다.
 #
-# 분을 0 으로 두지 않는다. 정각은 예약 요청이 몰려 큐가 길어지고, 실측으로 매번
-# 1~3시간 밀렸다 (10-24 2h05m / 10-26 1h46m / 10-27 3h05m / 10-28 2h57m — 전부 분 0).
-# 어중간한 분으로 옮겨 07:00 근처 도착을 노린다.
+# 그래서 "깨어난 시각"을 발송 시각으로 쓰지 않는다.
+#   1) 목표(07:00 KST)보다 한참 앞에서 한 시간 간격으로 네 번 깨운다
+#   2) 깨어난 run 은 scripts/wait-for-send-time.ps1 로 07:00 까지 기다렸다 보낸다
+#   3) 아직 100분 넘게 남은 run 은 아무것도 하지 않고 끝낸다 — 뒤 예약이 맡는다
+#   4) 이미 07:00 을 지나 깨어났으면 기다리지 않고 바로 보낸다
+# 지연이 0~3.5시간이면 네 번 중 하나는 반드시 05:20~07:00 사이에 깨어난다.
+# 둘 이상이 발송까지 가더라도 progress.json 의 lastSentDate 가 중복을 막는다.
+#
+# UTC 18:30/19:30/20:30/21:30 = KST 03:30/04:30/05:30/06:30 (다음 날).
+# 월~금(KST) = 일~목(UTC) 이라 0-4 가 된다.
 on:
   schedule:
-    - cron: '53 21 * * 0-4'
+    - cron: '30 18 * * 0-4'
+    - cron: '30 19 * * 0-4'
+    - cron: '30 20 * * 0-4'
+    - cron: '30 21 * * 0-4'
   workflow_dispatch:
     inputs:
       no:
@@ -27,12 +40,28 @@ concurrency:
 jobs:
   send:
     runs-on: ubuntu-latest
+    # 대기 한도(100분) + 발송 시간보다 넉넉하게.
+    timeout-minutes: 150
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
 
+      - name: 07:00 KST 까지 대기
+        id: gate
+        shell: pwsh
+        run: |
+          & ./scripts/wait-for-send-time.ps1 -Target '07:00' -MaxWaitMinutes 100
+
+      # 기다리는 동안 다른 run 이나 수동 발송이 진행 상태를 올렸을 수 있다.
+      # 묵은 체크아웃으로 보내면 같은 문장을 두 번 보내게 된다.
+      - name: 진행 상태 새로 받기
+        if: steps.gate.outputs.send == 'yes'
+        run: |
+          git pull --rebase --autostash || echo "진행 상태 갱신 실패 — 체크아웃 시점 상태로 진행합니다"
+
       - name: 발송
+        if: steps.gate.outputs.send == 'yes'
         shell: pwsh
         env:
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
@@ -54,7 +83,7 @@ jobs:
       # 카카오 갱신 토큰은 2개월마다 바뀐다. 새로 받은 값을 Secret 에 다시 넣지 않으면
       # 언젠가 조용히 만료되어 발송이 멎는다. 실패했을 때도 토큰은 갱신됐을 수 있어 always().
       - name: 갱신 토큰을 Secret 에 반영
-        if: always()
+        if: always() && steps.gate.outputs.send == 'yes'
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
@@ -66,7 +95,7 @@ jobs:
           fi
 
       - name: 진행 상태 커밋
-        if: always()
+        if: always() && steps.gate.outputs.send == 'yes'
         run: |
           if git diff --quiet -- state/progress.json; then
             echo "진행 상태 변화 없음"
