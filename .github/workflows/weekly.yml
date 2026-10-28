@@ -1,9 +1,10 @@
 name: 주말 복습 카드 (토 07:00 KST)
 
-# KST 토 07:00 = UTC 금 22:00
+# KST 토 06:53 = UTC 금 21:53
+# 분 0 을 피하는 이유는 daily.yml 주석 참고 (정각 혼잡으로 1~3시간 지연).
 on:
   schedule:
-    - cron: '0 22 * * 5'
+    - cron: '53 21 * * 5'
   workflow_dispatch:
     inputs:
       date:
