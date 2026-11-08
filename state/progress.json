@@ -1,7 +1,7 @@
 {
-  "nextNo": 60,
-  "lastSentNo": 59,
-  "lastSentDate": "2026-11-06",
+  "nextNo": 61,
+  "lastSentNo": 60,
+  "lastSentDate": "2026-11-09",
   "sentNos": [
     1,
     4,
@@ -56,7 +56,8 @@
     56,
     57,
     58,
-    59
+    59,
+    60
   ],
   "history": [
     {
@@ -274,6 +275,10 @@
     {
       "no": 59,
       "date": "2026-11-06"
+    },
+    {
+      "no": 60,
+      "date": "2026-11-09"
     }
   ],
   "lastWeeklyDate": "2026-11-07"
